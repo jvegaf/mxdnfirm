@@ -1,52 +1,88 @@
 #include "BtnKit.h"
 
-BtnKit::BtnKit(const uint8_t* arduinoPins, const uint8_t tPins)
+const byte buttonPins[] = {
+    SWPADL_1,
+    SWPADL_2,
+    SWPADL_3,
+    SWPADL_4,
+    SWPADL_5,
+    SWPADL_6,
+    SWPADL_7,
+    SWPADL_8,
+    SWPADR_1,
+    SWPADR_2,
+    SWPADR_3,
+    SWPADR_4,
+    SWPADR_5,
+    SWPADR_6,
+    SWPADR_7,
+    SWPADR_8,
+    SWFXL_1,
+    SWRANGE_L,
+    SWSYNC_L,
+    SWCUE_L,
+    SWPLAY_L,
+    SWFXR_1,
+    SWFXR_2,
+    SWFXR_3,
+    SWRANGE_R,
+    SWSYNC_R,
+    SWCUE_R,
+    SWPLAY_R,
+    SW_PREVIEW,
+    SW_BACK,
+    SW_BROWSER_L,
+    SW_BROWSER_R,
+    DECK_SEL,
+    SWSHIFT,
+    SWPRECUE_L1,
+    SWPRECUE_L2,
+    SWPRECUE_L3,
+};
+const byte nButtons = 37;
+int buttonCState[nButtons] = {};
+int buttonPState[nButtons] = {};
+/////////////////////////////////////////////
+// debounce
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 5;
+
+void BtnKit::begin()
 {
-    totalPins = tPins;
-    pins = arduinoPins;
-    pState = new int[totalPins]();
-    cState = new int[totalPins]();
-    lastdebouncetime = new unsigned long[totalPins]();
+    for (byte i = 0; i < nButtons; i++)
+    {
+        pinMode(buttonPins[i], INPUT_PULLUP);
+    }
 }
 
-void BtnKit::begin(uint8_t midiCh)
+
+void BtnKit::read(void (*func)(byte, byte, byte))
 {
-    for (uint8_t i = 0; i < totalPins; i++)
+    for (byte i = 0; i < nButtons; i++)
     {
-        pinMode(pins[i], INPUT_PULLUP);
+        buttonCState[i] = digitalRead(buttonPins[i]);
     }
 
-    midiChannel = midiCh;
-}
-
-void BtnKit::read(void (*funcOn)(uint8_t, uint8_t, uint8_t), void (*funcOff)(uint8_t, uint8_t, uint8_t))
-{
-
-    for (uint8_t i = 0; i < totalPins; i++)
-    {
-        cState[i] = digitalRead(pins[i]);
-    }
-
-    for (uint8_t i = 0; i < totalPins; i++)
+    for (byte i = 0; i < nButtons; i++)
     {
 
-        if ((millis() - lastdebouncetime[i]) > debouncedelay)
+        if ((millis() - lastDebounceTime) > debounceDelay)
         {
 
-            if (cState[i] != pState[i])
+            if (buttonCState[i] != buttonPState[i])
             {
-                lastdebouncetime[i] = millis();
+                lastDebounceTime = millis();
 
-                if (cState[i] == LOW)
+                if (buttonCState[i] == LOW)
                 {
-                    funcOn(i, 127, midiChannel); // envia NoteOn(nota, velocity, canal midi)
+                    func(i,127,10); // envia NoteOn(nota, velocity, canal midi)
+                    buttonPState[i] = buttonCState[i];
                 }
                 else
                 {
-                    funcOff(i, 127, midiChannel);
+                    func(i, 0, 10 );
+                    buttonPState[i] = buttonCState[i];
                 }
-
-                pState[i] = cState[i];
             }
         }
     }

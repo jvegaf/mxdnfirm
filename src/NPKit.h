@@ -1,18 +1,17 @@
 
-#ifndef ARDUINO_NPKIT_H
-#define ARDUINO_NPKIT_H
-#include <Arduino.h>
+#pragma once
+#include "pin_map.h"
 #include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
+#include <Npixel.h>
 
-class NPKit  
-{
-	private:
-		Adafruit_NeoPixel* _np;
-	public:
-		NPKit(uint8_t dataPin, uint8_t nPixels);
-		void begin();
-		void handleChange(uint8_t pos, uint8_t value);
+class NPKit {
+private:
+  Adafruit_NeoPixel np;
 
-		void allOFF();
+public:
+  NPKit(byte dataPin, byte nPixels);
+  void begin();
+  void clear();
+  void handleChange(Npixel npx);
 };
-#endif

@@ -15,13 +15,13 @@ void TouchKit::begin()
     rightBar.setScanSettings(0, 9);
 }
 
-void TouchKit::touchRead(void (*scc_func)(uint8_t, uint8_t, uint8_t))
+void TouchKit::touchRead(void (*scc_func)(byte, byte, byte))
 {
     leftBar.read();
 
     if (leftBar.getNumTouches() > 0)
     {
-        uint8_t leftLoc = leftBar.touchLocation(0) / 25;
+        byte leftLoc = leftBar.touchLocation(0) / 25;
 
         scc_func(14, leftLoc, 7);
     }
@@ -30,7 +30,7 @@ void TouchKit::touchRead(void (*scc_func)(uint8_t, uint8_t, uint8_t))
     
     if (rightBar.getNumTouches() > 0)
     {
-        uint8_t rightLoc = rightBar.touchLocation(0) / 25;
+        byte rightLoc = rightBar.touchLocation(0) / 25;
 
         scc_func(15, rightLoc, 7);
     }
