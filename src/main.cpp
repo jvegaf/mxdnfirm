@@ -1,26 +1,29 @@
+#include "BREncoder.h"
+#include "BtnKit.h"
+#include "MDCore.h"
+#include "PotKit.h"
+#include "np_map.h"
 #include <Arduino.h>
 #include <MIDI.h>
 #include <Thread.h>
 #include <ThreadController.h>
-#include "MDCore.h"
-#include "BREncoder.h"
-#include "BtnKit.h"
-#include "PotKit.h"
-#include "TouchKit.h"
 // Rev2 Version
+//
+const uint8_t DECK_B = 2;
+const uint8_t DECK_C = 3;
 
 MIDI_CREATE_DEFAULT_INSTANCE();
-
+volatile uint8_t deckSelected = 2;
 BREncoder enc;
-TouchKit touchBar;
 BtnKit buttons;
 PotKit pots;
 MDCore mdCore;
 
-ThreadController cpu;     //thread master, onde as outras vao ser adicionadas
+ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
 Thread threadReadButtons; // thread para controlar os botoes
 
+void changeDeck();
 void handleControlChange(byte channel, byte number, byte value);
 void handleNoteOn(byte channel, byte number, byte value);
 void handleNoteOff(byte channel, byte number, byte value);
@@ -29,49 +32,39 @@ void threadsSetup();
 void readButtons();
 void readPots();
 void readEncoder();
-void readTouchBar();
 void sendMidiNote(byte number, byte value, byte channel);
 void sendMidiCC(byte number, byte value, byte channel);
 
-void setup()
-{
+void setup() {
   midiSetup();
-  touchBar.begin();
   buttons.begin();
   pots.begin();
   mdCore.begin();
   threadsSetup();
 }
 
-void loop()
-{
+void loop() {
   cpu.run();
   MIDI.read();
   readEncoder();
-  readTouchBar();
 }
 
-void handleControlChange(byte channel, byte number, byte value)
-{
+void handleControlChange(byte channel, byte number, byte value) {
   mdCore.cChange(channel, number, value);
 }
 
-void handleNoteOn(byte channel, byte number, byte value)
-{
-  if (value < 1U)
-  {
+void handleNoteOn(byte channel, byte number, byte value) {
+  if (value < 1U) {
     mdCore.noteOff(channel, number, value);
     return;
   }
   mdCore.noteOn(channel, number, value);
 }
-void handleNoteOff(byte channel, byte number, byte value)
-{
+void handleNoteOff(byte channel, byte number, byte value) {
   mdCore.noteOff(channel, number, value);
 }
 
-void midiSetup()
-{
+void midiSetup() {
   MIDI.setHandleControlChange(handleControlChange);
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
@@ -80,8 +73,7 @@ void midiSetup()
   MIDI.turnThruOff();
 }
 
-void threadsSetup()
-{
+void threadsSetup() {
   // pots
   threadReadPots.setInterval(10);
   threadReadPots.onRun(readPots);
@@ -93,32 +85,26 @@ void threadsSetup()
   cpu.add(&threadReadButtons);
 }
 
-void readButtons()
-{
-  buttons.read(sendMidiNote);
+void changeDeck() {
+  if (deckSelected == DECK_B) {
+    deckSelected = DECK_C;
+    mdCore.cChange(1, NP_DECK_SEL, 4);
+  } else {
+    deckSelected = DECK_B;
+    mdCore.cChange(1, NP_DECK_SEL, 1);
+  }
 }
 
-void readPots()
-{
-  pots.read(sendMidiCC);
-}
+void readButtons() { buttons.read(sendMidiNote); }
 
-void readEncoder()
-{
-  enc.readEnc(sendMidiCC);
-}
+void readPots() { pots.read(sendMidiCC); }
 
-void readTouchBar()
-{
-  touchBar.touchRead(sendMidiCC);
-}
+void readEncoder() { enc.readEnc(sendMidiCC); }
 
-void sendMidiNote(byte number, byte value, byte channel)
-{
+void sendMidiNote(byte number, byte value, byte channel) {
   MIDI.sendNoteOn(number, value, channel);
 }
 
-void sendMidiCC(byte number, byte value, byte channel)
-{
+void sendMidiCC(byte number, byte value, byte channel) {
   MIDI.sendControlChange(number, value, channel);
 }
