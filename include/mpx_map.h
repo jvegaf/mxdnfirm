@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include <cstdint>
 
 namespace MPlex {
 
@@ -30,6 +29,8 @@ const uint8_t leftBtns[] = {PCUE2,   PCUE1,  SHIFT, LOOP_LH, SYNC_LH, RNG_LH,
                             PLAY_LH, CUE_LH, LPAD8, LPAD4,   LPAD7,   LPAD3,
                             LPAD2,   LPAD6,  LPAD1, LPAD5};
 
+uint8_t const t_leftBtns = 16;
+
 ////////////////////////////////
 ///     MPLEX RIGHT          ///
 ///////////////////////////////
@@ -53,7 +54,7 @@ const uint8_t rightBtns[] = {CUE_RH,  PLAY_RH, RNG_RH, LOOP_RH, PCUE3,
                              SYNC_RH, RPAD8,   RPAD4,  RPAD7,   RPAD3,
                              RPAD2,   RPAD6,   RPAD1,  RPAD5};
 
-const uint8_t t_rightBtns = 16;
+const uint8_t t_rightBtns = 15;
 
 uint8_t const PFXL_1 = 0;
 uint8_t const PFXL_2 = 1;
@@ -89,27 +90,10 @@ uint8_t const TEMP_L = 13;
 uint8_t const MIX_HP = 14;
 uint8_t const FADR_B = 15;
 
-
-const uint8_t bottomPots[] = {
-  FADR_C,
-  FADR_A,
-  TEMP_R,
-  FLTR_B,
-  VOL_HP,
-  BASS_A,
-  MIDL_A,
-  BASS_C,
-  MIDL_B,
-  MIDL_C,
-  BASS_B,
-  FLTR_C,
-  FLTR_A,
-  TEMP_L,
-  MIX_HP,
-  FADR_B
-};
+const uint8_t bottomPots[] = {FADR_C, FADR_A, TEMP_R, FLTR_B, VOL_HP, BASS_A,
+                              MIDL_A, BASS_C, MIDL_B, MIDL_C, BASS_B, FLTR_C,
+                              FLTR_A, TEMP_L, MIX_HP, FADR_B};
 
 uint8_t const t_bottomPots = 16;
-
 
 } // namespace MPlex

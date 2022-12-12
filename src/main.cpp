@@ -7,6 +7,7 @@
 #include "mpx_map.h"
 #include "Muxer.h"
 #include "Mux.h"
+#include "MuxPots.h"
 #include <Arduino.h>
 #include <MIDI.h>
 #include <Thread.h>
@@ -17,13 +18,22 @@ const uint8_t DECK_B = 2;
 const uint8_t DECK_C = 3;
 
 MIDI_CREATE_DEFAULT_INSTANCE();
-volatile uint8_t deckSelected = 2;
+
+volatile uint8_t deckSelected = DECK_B;
 BREncoder enc;
+
+Mux selector(mux_pins, lhMP_sig, MPlex::DECK_SEL);
+
+Muxer leftButtons(mux_pins, lhMP_sig, MPlex::leftBtns, MPlex::t_leftBtns);
+Muxer rightButtons(mux_pins, rhMP_sig, MPlex::rightBtns, MPlex::t_rightBtns);
+
+MuxPots topPotsMX(mux_pins, topPots_sig, MPlex::topPots, MPlex::t_topPots);
+MuxPots bottomPotsMX(mux_pins, btmPots_sig, MPlex::bottomPots, MPlex::t_bottomPots);
+
 BtnKit buttons;
-PotKit pots;
+
 MDCore mdCore;
 
-Mux selector(mux_pins, lh_mp_data, MPlex::DECK_SEL);
 
 ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
