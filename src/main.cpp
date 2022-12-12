@@ -2,7 +2,9 @@
 #include "BtnKit.h"
 #include "MDCore.h"
 #include "PotKit.h"
+#include "pin_map.h"
 #include "np_map.h"
+#include "mpx_map.h"
 #include "Muxer.h"
 #include "Mux.h"
 #include <Arduino.h>
@@ -21,7 +23,7 @@ BtnKit buttons;
 PotKit pots;
 MDCore mdCore;
 
-// Mux selector()
+Mux selector(mux_pins, lh_mp_data, MPlex::DECK_SEL);
 
 ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
