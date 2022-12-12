@@ -90,6 +90,15 @@ uint8_t const MPLEX_S2 = 40;
 uint8_t const MPLEX_S3 = 53;
 uint8_t const MPLEX_A0 = A0;
 
+const uint8_t mplex_pins[] = {
+  MPLEX_S0,
+  MPLEX_S1,
+  MPLEX_S2,
+  MPLEX_S3
+};
+
+uint8_t const t_mplex_pins = 4;
+
 //////////////////////////////////////
 // SHIFT REGISTERS
 

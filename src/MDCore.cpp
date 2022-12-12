@@ -80,12 +80,10 @@ void MDCore::vuChange(byte number, byte value)
 
 void MDCore::npChange(byte position, byte value)
 {
-    Npixel pix(position, value);
-    np.handleChange(pix);
+    np.handleChange(position, value);
 }
 
 void MDCore::setInitialDeckB()
 {
-    Npixel pix(NP_DECK_SEL, 1);
-    np.handleChange(pix);
+    np.handleChange(NP_DECK_SEL, 1);
 }

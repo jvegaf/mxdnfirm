@@ -7,7 +7,6 @@
 #include "pin_map.h"
 #include "sr_map.h"
 #include <Arduino.h>
-#include <Npixel.h>
 #include <Shifter.h>
 
 class MDCore {

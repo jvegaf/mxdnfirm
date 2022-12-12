@@ -2,8 +2,9 @@
 #include "BtnKit.h"
 #include "MDCore.h"
 #include "PotKit.h"
-#include "Selector.h"
 #include "np_map.h"
+#include "Muxer.h"
+#include "Mux.h"
 #include <Arduino.h>
 #include <MIDI.h>
 #include <Thread.h>
@@ -19,6 +20,8 @@ BREncoder enc;
 BtnKit buttons;
 PotKit pots;
 MDCore mdCore;
+
+// Mux selector()
 
 ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
@@ -38,7 +41,6 @@ void sendMidiCC(byte number, byte value, byte channel);
 
 void setup() {
   midiSetup();
-  Selector::begin();
   buttons.begin();
   pots.begin();
   mdCore.begin();
@@ -98,7 +100,6 @@ void changeDeck() {
 }
 
 void readButtons() {
-  Selector::read(changeDeck);
   buttons.read(sendMidiNote);
 }
 
