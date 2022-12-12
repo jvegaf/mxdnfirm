@@ -2,6 +2,7 @@
 #include "BtnKit.h"
 #include "MDCore.h"
 #include "PotKit.h"
+#include "Selector.h"
 #include "np_map.h"
 #include <Arduino.h>
 #include <MIDI.h>
@@ -37,6 +38,7 @@ void sendMidiCC(byte number, byte value, byte channel);
 
 void setup() {
   midiSetup();
+  Selector::begin();
   buttons.begin();
   pots.begin();
   mdCore.begin();
@@ -95,7 +97,10 @@ void changeDeck() {
   }
 }
 
-void readButtons() { buttons.read(sendMidiNote); }
+void readButtons() {
+  Selector::read(changeDeck);
+  buttons.read(sendMidiNote);
+}
 
 void readPots() { pots.read(sendMidiCC); }
 

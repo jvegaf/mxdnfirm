@@ -3,7 +3,7 @@
 #include "pin_map.h"
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
-#include <Npixel.h>
+#include <stdint.h>
 
 class NPKit {
 private:
@@ -13,5 +13,5 @@ public:
   NPKit(byte dataPin, byte nPixels);
   void begin();
   void clear();
-  void handleChange(Npixel npx);
+  void handleChange(uint8_t pos, uint8_t val);
 };

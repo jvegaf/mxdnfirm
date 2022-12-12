@@ -35,6 +35,8 @@ uint8_t const SWPADR_8 = 25;
 // LEFT BUTTONS
 
 uint8_t const SWFXL_1 = 7;
+uint8_t const SWFXL_2 = 6;
+uint8_t const SWFXL_3 = 5;
 uint8_t const SWRANGE_L = 16;
 uint8_t const SWSYNC_L = 8;
 uint8_t const SWCUE_L = 22;
@@ -73,7 +75,7 @@ uint8_t const SW_BROWSER_R = 32;
 //////////////////////////////////////
 // COMMON
 
-uint8_t const DECK_SEL = 4;
+// uint8_t const DECK_SEL = 4;
 uint8_t const SWSHIFT = 17;
 uint8_t const SWPRECUE_L1 = 45;
 uint8_t const SWPRECUE_L2 = 43;
