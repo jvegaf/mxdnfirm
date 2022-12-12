@@ -16,7 +16,7 @@ const uint8_t SWFXR_1 = 12;
 const uint8_t SWBR_PREVIEW = 14;
 const uint8_t SWBR_BACK = 15;
 
-const uint8_t btn_pins[] = {
+const uint8_t btnPins[] = {
     SWFXL_3,
     SWFXL_2,
     SWFXL_1,
@@ -29,7 +29,7 @@ const uint8_t btn_pins[] = {
     SWBR_PREVIEW
 };
 
-const uint8_t t_btn_pins = 10;
+const uint8_t t_btnPins = 10;
 
 const uint8_t L_BROWSER_A = 2;
 const uint8_t L_BROWSER_B = 3;
@@ -59,10 +59,10 @@ const uint8_t MPLEX_S0 = 47;
 const uint8_t MPLEX_S1 = 49;
 const uint8_t MPLEX_S2 = 40;
 const uint8_t MPLEX_S3 = 53;
-const uint8_t top_pots_data = A1;
-const uint8_t rh_mp_data  = A2;
-const uint8_t lh_mp_data  = A3;
-const uint8_t btm_pots_data = A4;
+const uint8_t topPots_sig = A1;
+const uint8_t rhMP_sig    = A2;
+const uint8_t lhMP_sig    = A3;
+const uint8_t btmPots_sig = A4;
 
 //////////////////////////////////////
 // POTS ANALOG PINS
@@ -83,48 +83,43 @@ const uint8_t mux_pins[] = {
     MPLEX_S3
 };
 
-const uint8_t t_muxpins = 4;
-
-
-const uint8_t in_pins[] = {
-  SWFXR_2,
-  SWFXR_3,
-  SWFXL_1,
-  SW_BROWSER_R,
-  SW_BROWSER_L,
-  SWFXL_2,
-  SWFXL_3,
-  SWFXR_1,
-  SWBR_PREVIEW,
-  SWBR_BACK,
-  r_mux_datapin,
-  l_mux_datapin
-};
-
-
-
-const uint8_t t_in_p = 12;
-const uint8_t t_out_p = 20;
-
-const uint8_t out_pins[] = {
-    L_BROWSER_A,
-    L_BROWSER_B,
-    NP_DATA,
-    L1VU_LATCH,
-    L1VU_SIG,
-    R_BROWSER_B,
-    R_BROWSER_A,
-    MRVU_LATCH,
-    MRVU_SIG,
-    MLVU_LATCH,
-    L2VU_SIG,
-    MLVU_SIG,
-    L3VU_SIG,
-    L3VU_LATCH,
-    FBL_LATCH,
-    L2VU_LATCH,
-    FBL_SIG,
-    FBR_LATCH,
-    FBR_SIG,
-    SRCLK
-};
+// const uint8_t in_pins[] = {
+//   SWFXR_2,
+//   SWFXR_3,
+//   SWFXL_1,
+//   SW_BROWSER_R,
+//   SW_BROWSER_L,
+//   SWFXL_2,
+//   SWFXL_3,
+//   SWFXR_1,
+//   SWBR_PREVIEW,
+//   SWBR_BACK,
+//   lhMP_sig,
+//   rhMP_sig
+// };
+//
+// const uint8_t t_in_p = 12;
+// const uint8_t t_out_p = 20;
+//
+// const uint8_t out_pins[] = {
+//     L_BROWSER_A,
+//     L_BROWSER_B,
+//     NP_DATA,
+//     L1VU_LATCH,
+//     L1VU_SIG,
+//     R_BROWSER_B,
+//     R_BROWSER_A,
+//     MRVU_LATCH,
+//     MRVU_SIG,
+//     MLVU_LATCH,
+//     L2VU_SIG,
+//     MLVU_SIG,
+//     L3VU_SIG,
+//     L3VU_LATCH,
+//     FBL_LATCH,
+//     L2VU_LATCH,
+//     FBL_SIG,
+//     FBR_LATCH,
+//     FBR_SIG,
+//     SRCLK
+// };

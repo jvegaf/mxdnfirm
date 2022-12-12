@@ -1,11 +1,16 @@
-#include "PotKit.h"
+#include "MuxPots.h"
 
-void PotKit::read(uint8_t midiCh, void (*scc_func)(uint8_t, uint8_t, uint8_t))
+void MuxPots::begin()
+{ 
+    mplexPots->begin();
+}
+
+void MuxPots::read(uint8_t midiCh, void (*scc_func)(uint8_t, uint8_t, uint8_t))
 { 
     for (uint8_t i = 0; i < t_elements; i++)
     {
-      potCState[i] = analogRead(elements[i]);
       uint16_t potVar = abs(potCState[i] - potPState[i]); // calcula a variacao da porta analogica
+      potCState[i] = mplexPots->readChannel(elements[i]);
 
       if (potVar >= kThreshold)
       {
