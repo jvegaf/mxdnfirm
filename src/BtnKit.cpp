@@ -13,17 +13,17 @@ void BtnKit::read(void (*func)(uint8_t, uint8_t, uint8_t)) {
 
   for (uint8_t i = 0; i < t_elements; i++) {
 
-    if ((millis() - lastDebounceTime) > debounceDelay) {
+    if ((millis() - lastDebounceTime[i]) > debouncedelay) {
 
-      if (buttonCState[i] != buttonPState[i]) {
-        lastDebounceTime = millis();
+      if (cState[i] != pState[i]) {
+        lastDebounceTime[i] = millis();
 
-        if (buttonCState[i] == LOW) {
+        if (cState[i] == LOW) {
           func(i, 127, 10); // envia NoteOn(nota, velocity, canal midi)
         } else {
           func(i, 0, 10);
         }
-        buttonPState[i] = buttonCState[i];
+        pState[i] = cState[i];
       }
     }
   }
