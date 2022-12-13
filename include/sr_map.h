@@ -2,95 +2,95 @@
 
 #include <Arduino.h>
 
+namespace Leds {}
+
 ////////////////////////////////////
 // REGISTERS
 
-// SETS
-const byte VU_REG_SET = 0;
-const byte FB_REG_SET = 1;
-
 // VU
-const byte VU_MASTER_RIGHT = 0;
-const byte VU_MASTER_LEFT = 1;
-const byte VU_LINE_3 = 2;
-const byte VU_LINE_2 = 3;
-const byte VU_LINE_1 = 4;
+uint8_t const VU_MASTER_RIGHT = 0;
+uint8_t const VU_MASTER_LEFT = 1;
+uint8_t const VU_LINE_3 = 2;
+uint8_t const VU_LINE_2 = 3;
+uint8_t const VU_LINE_1 = 4;
 
 // FB
 
-const byte FB_RIGHT = 0;
-const byte FB_LEFT = 1;
+uint8_t const FB_RIGHT = 0;
+uint8_t const FB_LEFT = 1;
 
 ////////////////////////////////////
 // MASTER RIGHT
-const byte VUMASR_0 = 0;
-const byte VUMASR_1 = 1;
-const byte VUMASR_2 = 2;
-const byte VUMASR_3 = 3;
-const byte VUMASR_4 = 4;
-const byte VUMASR_5 = 5;
-const byte VUMASR_6 = 6;
-const byte VUMASR_7 = 7;
+uint8_t const VUMASR_0 = 0;
+uint8_t const VUMASR_1 = 1;
+uint8_t const VUMASR_2 = 2;
+uint8_t const VUMASR_3 = 3;
+uint8_t const VUMASR_4 = 4;
+uint8_t const VUMASR_5 = 5;
+uint8_t const VUMASR_6 = 6;
+uint8_t const VUMASR_7 = 7;
 
 ////////////////////////////////////
 // MASTER LEFT
-const byte VUMASL_0 = 8;
-const byte VUMASL_1 = 9;
-const byte VUMASL_2 = 10;
-const byte VUMASL_3 = 11;
-const byte VUMASL_4 = 12;
-const byte VUMASL_5 = 13;
-const byte VUMASL_6 = 14;
-const byte VUMASL_7 = 15;
+uint8_t const VUMASL_0 = 8;
+uint8_t const VUMASL_1 = 9;
+uint8_t const VUMASL_2 = 10;
+uint8_t const VUMASL_3 = 11;
+uint8_t const VUMASL_4 = 12;
+uint8_t const VUMASL_5 = 13;
+uint8_t const VUMASL_6 = 14;
+uint8_t const VUMASL_7 = 15;
 
 ////////////////////////////////////
 // VUMETER LINE 1
-const byte VUL1_0 = 16;
-const byte VUL1_1 = 17;
-const byte VUL1_2 = 18;
-const byte VUL1_3 = 19;
-const byte VUL1_4 = 20;
-const byte VUL1_5 = 21;
-const byte VUL1_6 = 22;
-const byte VUL1_7 = 23;
+uint8_t const VUL1_0 = 16;
+uint8_t const VUL1_1 = 17;
+uint8_t const VUL1_2 = 18;
+uint8_t const VUL1_3 = 19;
+uint8_t const VUL1_4 = 20;
+uint8_t const VUL1_5 = 21;
+uint8_t const VUL1_6 = 22;
+uint8_t const VUL1_7 = 23;
 
 ////////////////////////////////////
 // VUMETER LINE 2
-const byte VUL2_0 = 24;
-const byte VUL2_1 = 25;
-const byte VUL2_2 = 26;
-const byte VUL2_3 = 27;
-const byte VUL2_4 = 28;
-const byte VUL2_5 = 29;
-const byte VUL2_6 = 30;
-const byte VUL2_7 = 31;
+uint8_t const VUL2_0 = 24;
+uint8_t const VUL2_1 = 25;
+uint8_t const VUL2_2 = 26;
+uint8_t const VUL2_3 = 27;
+uint8_t const VUL2_4 = 28;
+uint8_t const VUL2_5 = 29;
+uint8_t const VUL2_6 = 30;
+uint8_t const VUL2_7 = 31;
 
 ////////////////////////////////////
 // VUMETER LINE 3
-const byte VUL3_0 = 32;
-const byte VUL3_1 = 33;
-const byte VUL3_2 = 34;
-const byte VUL3_3 = 35;
-const byte VUL3_4 = 36;
-const byte VUL3_5 = 37;
-const byte VUL3_6 = 38;
-const byte VUL3_7 = 39;
+uint8_t const VUL3_0 = 32;
+uint8_t const VUL3_1 = 33;
+uint8_t const VUL3_2 = 34;
+uint8_t const VUL3_3 = 35;
+uint8_t const VUL3_4 = 36;
+uint8_t const VUL3_5 = 37;
+uint8_t const VUL3_6 = 38;
+uint8_t const VUL3_7 = 39;
 
 ///////////////////////////////////
 // FB RIGHT
-const byte HP_L3 = 1;
-const byte PLAY_R = 2;
-const byte CUE_R = 3;
-const byte FX3_R = 4;
-const byte FX2_R = 5;
-const byte FX1_R = 6;
+uint8_t const HP_C = 0;
+uint8_t const PLAY_R = 1;
+uint8_t const CUE_R = 2;
+uint8_t const LOOP_R = 3;
+uint8_t const FX3_R = 4;
+uint8_t const FX2_R = 5;
+uint8_t const FX1_R = 6;
 
 ////////////////////////////////////
 // FB LEFT
-const byte CUE_L = 9;
-const byte PLAY_L = 10;
-const byte FX1_L = 11;
-const byte FX2_L = 12;
-const byte FX3_L = 13;
-const byte HP_L1 = 14;
-const byte HP_L2 = 15;
+uint8_t const FX3_L = 0;
+uint8_t const FX2_L = 1;
+uint8_t const FX1_L = 2;
+uint8_t const PLAY_L = 3;
+uint8_t const CUE_L = 4;
+uint8_t const LOOP_L = 5;
+uint8_t const HP_A = 6;
+uint8_t const HP_B = 7;

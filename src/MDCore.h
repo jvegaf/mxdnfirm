@@ -9,15 +9,11 @@
 #include <Arduino.h>
 #include <Shifter.h>
 
-class MDCore {
-public:
-  void begin();
-  void cChange(byte channel, byte number, byte value);
-  void noteOn(byte channel, byte number, byte value);
-  void noteOff(byte channel, byte number, byte value);
+namespace MDCore {
 
-private:
-  void vuChange(byte number, byte value);
-  void npChange(byte position, byte value);
-  void setInitialDeckB();
-};
+void begin();
+void noteOff(byte channel, byte number, byte value);
+void cChange(byte channel, byte number, byte value);
+void noteOn(byte channel, byte number, byte value);
+
+} // namespace MDCore
