@@ -2,7 +2,6 @@
 
 #include <Arduino.h>
 
-
 //////////////////////////////////////
 // BUTTONS
 const uint8_t SWFXR_2 = 4;
@@ -16,18 +15,9 @@ const uint8_t SWFXR_1 = 12;
 const uint8_t SWBR_PREVIEW = 14;
 const uint8_t SWBR_BACK = 15;
 
-const uint8_t btnPins[] = {
-    SWFXL_3,
-    SWFXL_2,
-    SWFXL_1,
-    SWFXR_3,
-    SWFXR_2,
-    SWFXR_1,
-    SW_BROWSER_R,
-    SW_BROWSER_L,
-    SWBR_BACK,
-    SWBR_PREVIEW
-};
+const uint8_t btnPins[] = {SWFXL_3,   SWFXL_2,     SWFXL_1,      SWFXR_3,
+                           SWFXR_2,   SWFXR_1,     SW_BROWSER_R, SW_BROWSER_L,
+                           SWBR_BACK, SWBR_PREVIEW};
 
 const uint8_t t_btnPins = 10;
 
@@ -60,8 +50,8 @@ const uint8_t MPLEX_S1 = 49;
 const uint8_t MPLEX_S2 = 40;
 const uint8_t MPLEX_S3 = 53;
 const uint8_t topPots_sig = A1;
-const uint8_t rhMP_sig    = A2;
-const uint8_t lhMP_sig    = A3;
+const uint8_t rhMP_sig = A2;
+const uint8_t lhMP_sig = A3;
 const uint8_t btmPots_sig = A4;
 
 //////////////////////////////////////
@@ -70,18 +60,11 @@ const uint8_t btmPots_sig = A4;
 const uint8_t PFXR_1 = A0;
 const uint8_t PMASTER = A14;
 
-const uint8_t aPotsSet[] = {
-    PFXR_1,
-    PMASTER};
+const uint8_t PotPins[] = {PFXR_1, PMASTER};
 
-const uint8_t nAPots = 2;
+const uint8_t t_potPins = 2;
 
-const uint8_t mux_pins[] = {
-    MPLEX_S0,
-    MPLEX_S1,
-    MPLEX_S2,
-    MPLEX_S3
-};
+const uint8_t mux_pins[] = {MPLEX_S0, MPLEX_S1, MPLEX_S2, MPLEX_S3};
 
 // const uint8_t in_pins[] = {
 //   SWFXR_2,

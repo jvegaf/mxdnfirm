@@ -1,13 +1,13 @@
 #include "BREncoder.h"
 #include "BtnKit.h"
 #include "MDCore.h"
-#include "PotKit.h"
-#include "pin_map.h"
-#include "np_map.h"
-#include "mpx_map.h"
-#include "Muxer.h"
 #include "Mux.h"
 #include "MuxPots.h"
+#include "Muxer.h"
+#include "PotKit.h"
+#include "mpx_map.h"
+#include "np_map.h"
+#include "pin_map.h"
 #include <Arduino.h>
 #include <MIDI.h>
 #include <Thread.h>
@@ -28,12 +28,13 @@ Muxer leftButtons(mux_pins, lhMP_sig, MPlex::leftBtns, MPlex::t_leftBtns);
 Muxer rightButtons(mux_pins, rhMP_sig, MPlex::rightBtns, MPlex::t_rightBtns);
 
 MuxPots topPotsMX(mux_pins, topPots_sig, MPlex::topPots, MPlex::t_topPots);
-MuxPots bottomPotsMX(mux_pins, btmPots_sig, MPlex::bottomPots, MPlex::t_bottomPots);
+MuxPots bottomPotsMX(mux_pins, btmPots_sig, MPlex::bottomPots,
+                     MPlex::t_bottomPots);
 
-BtnKit buttons;
+BtnKit buttons(btnPins, t_btnPins);
+PotKit pots(PotPins, t_potPins);
 
 MDCore mdCore;
-
 
 ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
@@ -54,7 +55,6 @@ void sendMidiCC(byte number, byte value, byte channel);
 void setup() {
   midiSetup();
   buttons.begin();
-  pots.begin();
   mdCore.begin();
   threadsSetup();
 }
@@ -111,9 +111,7 @@ void changeDeck() {
   }
 }
 
-void readButtons() {
-  buttons.read(sendMidiNote);
-}
+void readButtons() { buttons.read(sendMidiNote); }
 
 void readPots() { pots.read(sendMidiCC); }
 
