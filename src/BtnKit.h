@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include <stdint.h>
 
 class BtnKit {
 private:
@@ -21,5 +22,5 @@ public:
   }
 
   void begin();
-  void read(void (*func)(uint8_t, uint8_t, uint8_t));
+  void read(void (*func)(uint8_t, uint8_t, uint8_t), uint8_t midiCh);
 };

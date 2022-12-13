@@ -5,6 +5,7 @@
 #include "MuxPots.h"
 #include "Muxer.h"
 #include "PotKit.h"
+#include "midi_map.h"
 #include "mpx_map.h"
 #include "np_map.h"
 #include "pin_map.h"
@@ -27,9 +28,9 @@ Mux selector(mux_pins, lhMP_sig, MPlex::DECK_SEL);
 Muxer leftButtons(mux_pins, lhMP_sig, MPlex::leftBtns, MPlex::t_leftBtns);
 Muxer rightButtons(mux_pins, rhMP_sig, MPlex::rightBtns, MPlex::t_rightBtns);
 
-MuxPots topPotsMX(mux_pins, topPots_sig, MPlex::topPots, MPlex::t_topPots);
-MuxPots bottomPotsMX(mux_pins, btmPots_sig, MPlex::bottomPots,
-                     MPlex::t_bottomPots);
+MuxPots topPots(mux_pins, topPots_sig, MPlex::topPots, MPlex::t_topPots);
+MuxPots bottomPots(mux_pins, btmPots_sig, MPlex::bottomPots,
+                   MPlex::t_bottomPots);
 
 BtnKit buttons(btnPins, t_btnPins);
 PotKit pots(PotPins, t_potPins);
@@ -55,6 +56,8 @@ void sendMidiCC(byte number, byte value, byte channel);
 void setup() {
   midiSetup();
   buttons.begin();
+  topPots.begin();
+  bottomPots.begin();
   mdCore.begin();
   threadsSetup();
 }
@@ -111,9 +114,18 @@ void changeDeck() {
   }
 }
 
-void readButtons() { buttons.read(sendMidiNote); }
+void readButtons() {
+  selector.read(changeDeck);
+  leftButtons.read(sendMidiNote, leftBtnsChannel);
+  rightButtons.read(sendMidiNote, rightBtnsChannel);
+  buttons.read(sendMidiNote, buttonsChannel);
+}
 
-void readPots() { pots.read(sendMidiCC); }
+void readPots() {
+  topPots.read(sendMidiCC, topPotsChannel);
+  bottomPots.read(sendMidiCC, bottomPotsChannel);
+  pots.read(sendMidiCC, potsChannel);
+}
 
 void readEncoder() { enc.readEnc(sendMidiCC); }
 

@@ -2,6 +2,7 @@
 
 #include "sr_map.h"
 #include <Arduino.h>
+#include <stdint.h>
 
 /////////////////////////////////////////
 // OUTS
@@ -62,3 +63,11 @@ const byte MASTER_OUT_R = 3;
 const byte LEVEL_DECK_A = 2;
 const byte LEVEL_DECK_B = 1;
 const byte LEVEL_DECK_C = 0;
+
+uint8_t const leftBtnsChannel = 1;
+uint8_t const rightBtnsChannel = 2;
+uint8_t const buttonsChannel = 3;
+
+uint8_t const topPotsChannel = 1;
+uint8_t const bottomPotsChannel = 2;
+uint8_t const potsChannel = 3;

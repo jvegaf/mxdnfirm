@@ -1,4 +1,5 @@
 #include "BtnKit.h"
+#include <stdint.h>
 
 void BtnKit::begin() {
   for (uint8_t i = 0; i < t_elements; i++) {
@@ -6,7 +7,7 @@ void BtnKit::begin() {
   }
 }
 
-void BtnKit::read(void (*func)(uint8_t, uint8_t, uint8_t)) {
+void BtnKit::read(void (*func)(uint8_t, uint8_t, uint8_t), uint8_t midiCh) {
   for (uint8_t i = 0; i < t_elements; i++) {
     cState[i] = digitalRead(elements[i]);
   }
@@ -19,9 +20,9 @@ void BtnKit::read(void (*func)(uint8_t, uint8_t, uint8_t)) {
         lastDebounceTime[i] = millis();
 
         if (cState[i] == LOW) {
-          func(i, 127, 10); // envia NoteOn(nota, velocity, canal midi)
+          func(i, 127, midiCh); // envia NoteOn(nota, velocity, canal midi)
         } else {
-          func(i, 0, 10);
+          func(i, 0, midiCh);
         }
         pState[i] = cState[i];
       }
