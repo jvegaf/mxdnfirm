@@ -35,8 +35,6 @@ MuxPots bottomPots(mux_pins, btmPots_sig, MPlex::bottomPots,
 BtnKit buttons(btnPins, t_btnPins);
 PotKit pots(PotPins, t_potPins);
 
-MDCore mdCore;
-
 ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
 Thread threadReadButtons; // thread para controlar os botoes
@@ -58,7 +56,7 @@ void setup() {
   buttons.begin();
   topPots.begin();
   bottomPots.begin();
-  mdCore.begin();
+  MDCore::begin();
   threadsSetup();
 }
 
@@ -69,18 +67,18 @@ void loop() {
 }
 
 void handleControlChange(byte channel, byte number, byte value) {
-  mdCore.cChange(channel, number, value);
+  MDCore::cChange(channel, number, value);
 }
 
 void handleNoteOn(byte channel, byte number, byte value) {
   if (value < 1U) {
-    mdCore.noteOff(channel, number, value);
+    MDCore::noteOff(channel, number, value);
     return;
   }
-  mdCore.noteOn(channel, number, value);
+  MDCore::noteOn(channel, number, value);
 }
 void handleNoteOff(byte channel, byte number, byte value) {
-  mdCore.noteOff(channel, number, value);
+  MDCore::noteOff(channel, number, value);
 }
 
 void midiSetup() {
@@ -107,10 +105,10 @@ void threadsSetup() {
 void changeDeck() {
   if (deckSelected == DECK_B) {
     deckSelected = DECK_C;
-    mdCore.cChange(1, NP_DECK_SEL, 4);
+    MDCore::cChange(1, NP_DECK_SEL, 4);
   } else {
     deckSelected = DECK_B;
-    mdCore.cChange(1, NP_DECK_SEL, 1);
+    MDCore::cChange(1, NP_DECK_SEL, 1);
   }
 }
 
