@@ -1,11 +1,11 @@
 
 #pragma once
 #include "NPKit.h"
-#include "SRKit.h"
 #include "midi_map.h"
 #include "np_map.h"
 #include "pin_map.h"
 #include "sr_map.h"
+#include "vumeters.h"
 #include <Arduino.h>
 #include <Shifter.h>
 

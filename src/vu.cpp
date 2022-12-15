@@ -1,24 +1,24 @@
-#include "vu.hpp"
+#include "vu.h"
 
 VU::VU(uint8_t p_data, uint8_t p_latch, uint8_t p_clock)
-: m_data_pin{p_data}, m_latch_pin{p_latch}, m_clock_pin{p_clock}
-{ }
+    : dataPin(p_data), latchPin(p_latch), clockPin(p_clock) {}
 
 void VU::begin() {
-    this->clear();
+  pinMode(clockPin, OUTPUT);
+  pinMode(dataPin, OUTPUT);
+  pinMode(latchPin, OUTPUT);
+  digitalWrite(clockPin, LOW);
+  digitalWrite(latchPin, LOW);
+  clear();
 }
 
-void VU::setLevel(uint16_t level)
-{
-    digitalWrite(m_latch_pin, LOW);
-    // shift out lowbyte
-    shiftOut(m_data_pin, m_clock_pin, LSBFIRST, level);
-    // shift out highbyte
-    shiftOut(m_data_pin, m_clock_pin, LSBFIRST, (level >> 8));
-    digitalWrite(m_latch_pin, HIGH);
+void VU::setLevel(uint16_t level) {
+  digitalWrite(latchPin, LOW);
+  // shift out lowbyte
+  shiftOut(dataPin, clockPin, LSBFIRST, level);
+  // shift out highbyte
+  shiftOut(dataPin, clockPin, LSBFIRST, (level >> 8));
+  digitalWrite(latchPin, HIGH);
 }
 
-void VU::clear()
-{
-    this->setLevel(0);
-}
+void VU::clear() { setLevel(0x00); }
