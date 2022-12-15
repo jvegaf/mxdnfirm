@@ -223,5 +223,15 @@
         "command": "/home/d_h4z3/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/mega/src/main.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega2560 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60105 -DARDUINO_AVR_MEGA2560 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I.pio/libdeps/mega/Shift-Register-8-Bit-74HC595 -I.pio/libdeps/mega/Encoder -I.pio/libdeps/mega/Encoder/utility \"-I.pio/libdeps/mega/MIDI Library/src\" -I.pio/libdeps/mega/ArduinoThread \"-I.pio/libdeps/mega/Adafruit NeoPixel\" -I.pio/libdeps/mega/Multiplexer4067 -I/home/d_h4z3/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/d_h4z3/.platformio/packages/framework-arduino-avr/variants/mega src/main.cpp",
         "directory": "/home/d_h4z3/Code/mxdnfirm",
         "file": "/home/d_h4z3/Code/mxdnfirm/src/main.cpp"
+    },
+    {
+        "command": "/home/d_h4z3/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/mega/src/vu.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega2560 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60105 -DARDUINO_AVR_MEGA2560 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I.pio/libdeps/mega/Shift-Register-8-Bit-74HC595 -I.pio/libdeps/mega/Encoder -I.pio/libdeps/mega/Encoder/utility \"-I.pio/libdeps/mega/MIDI Library/src\" -I.pio/libdeps/mega/ArduinoThread \"-I.pio/libdeps/mega/Adafruit NeoPixel\" -I.pio/libdeps/mega/Multiplexer4067 -I/home/d_h4z3/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/d_h4z3/.platformio/packages/framework-arduino-avr/variants/mega src/vu.cpp",
+        "directory": "/home/d_h4z3/Code/mxdnfirm",
+        "file": "/home/d_h4z3/Code/mxdnfirm/src/vu.cpp"
+    },
+    {
+        "command": "/home/d_h4z3/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/mega/src/vumeters.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega2560 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60105 -DARDUINO_AVR_MEGA2560 -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -Iinclude -Isrc -I.pio/libdeps/mega/Shift-Register-8-Bit-74HC595 -I.pio/libdeps/mega/Encoder -I.pio/libdeps/mega/Encoder/utility \"-I.pio/libdeps/mega/MIDI Library/src\" -I.pio/libdeps/mega/ArduinoThread \"-I.pio/libdeps/mega/Adafruit NeoPixel\" -I.pio/libdeps/mega/Multiplexer4067 -I/home/d_h4z3/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/d_h4z3/.platformio/packages/framework-arduino-avr/variants/mega src/vumeters.cpp",
+        "directory": "/home/d_h4z3/Code/mxdnfirm",
+        "file": "/home/d_h4z3/Code/mxdnfirm/src/vumeters.cpp"
     }
 ]

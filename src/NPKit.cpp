@@ -29,6 +29,10 @@ void handleChange(uint8_t pos, uint8_t val) {
   np.show();
 }
 
+void handleColorChange(uint8_t pos, uint32_t color) {
+  np.setPixelColor(pos, color);
+}
+
 void clear() {
   np.clear();
   np.show();

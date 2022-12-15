@@ -1,9 +1,12 @@
 #include "MDCore.h"
+#include "NPKit.h"
 
 namespace MDCore {
 
+
 void begin() {
-  np.begin();
+  VUmeters::begin();
+  NPKit::begin();
   setInitialDeckB();
 }
 
@@ -41,16 +44,5 @@ void noteOff(uint8_t channel, uint8_t number, uint8_t value) {
   }
 }
 
-void vuChange(uint8_t number, uint8_t value) {
-  if (regsVU[number] != vuValues[value]) {
-    regsVU[number] = vuValues[value];
-    vuSR.sendState(regsVU);
-  }
-}
-
-void npChange(uint8_t position, uint8_t value) {
-  np.handleChange(position, value);
-}
-
-void setInitialDeckB() { np.handleChange(NP_DECK_SEL, 1); }
+void setInitialDeckB() { NPKit::handleChange(NP_DECK_SEL, 1); }
 } // namespace MDCore

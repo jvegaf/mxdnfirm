@@ -19,5 +19,5 @@ uint32_t const GRAY_COL = Adafruit_NeoPixel::Color(191, 201, 202);
 void begin();
 void clear();
 void handleChange(uint8_t pos, uint8_t val);
-void handleChange(uint8_t pos, uint32_t color);
+void handleColorChange(uint8_t pos, uint32_t color);
 }; // namespace NPKit
