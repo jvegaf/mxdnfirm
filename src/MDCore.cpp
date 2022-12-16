@@ -1,8 +1,10 @@
 #include "MDCore.h"
 #include "NPKit.h"
+#include "vumeters.h"
 
 namespace MDCore {
 
+void setInitialDeckB() { NPKit::handleChange(NP_DECK_SEL, 1); }
 
 void begin() {
   VUmeters::begin();
@@ -13,10 +15,11 @@ void begin() {
 void cChange(uint8_t channel, uint8_t number, uint8_t value) {
   switch (channel) {
   case 1: // np
-    npChange(number, value);
+      NPKit::handleChange(number, value);
+
     break;
   case 2: // VU
-    vuChange(number, value);
+      VUmeters::setLevel(number, value);
     break;
 
   default:
@@ -44,5 +47,4 @@ void noteOff(uint8_t channel, uint8_t number, uint8_t value) {
   }
 }
 
-void setInitialDeckB() { NPKit::handleChange(NP_DECK_SEL, 1); }
 } // namespace MDCore
