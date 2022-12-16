@@ -23,17 +23,16 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 volatile uint8_t deckSelected = DECK_B;
 BREncoder enc;
 
-Mux selector(mux_pins, lhMP_sig, MPlex::DECK_SEL);
+Mux selector(lhMPSig, MPlex::DECK_SEL);
 
-Muxer leftButtons(mux_pins, lhMP_sig, MPlex::leftBtns, MPlex::t_leftBtns);
-Muxer rightButtons(mux_pins, rhMP_sig, MPlex::rightBtns, MPlex::t_rightBtns);
+Muxer leftButtons(lhMPSig, MPlex::leftBtns, MPlex::tLeftBtns);
+Muxer rightButtons(rhMPSig, MPlex::rightBtns, MPlex::tRightBtns);
 
-MuxPots topPots(mux_pins, topPots_sig, MPlex::topPots, MPlex::t_topPots);
-MuxPots bottomPots(mux_pins, btmPots_sig, MPlex::bottomPots,
-                   MPlex::t_bottomPots);
+MuxPots topPots(topPotsSig, MPlex::topPots, MPlex::tTopPots);
+MuxPots bottomPots(btmPotsSig, MPlex::bottomPots, MPlex::tBottomPots);
 
-BtnKit buttons(btnPins, t_btnPins);
-PotKit pots(PotPins, t_potPins);
+BtnKit buttons(btnPins, tBtnPins);
+PotKit pots(PotPins, tPotPins);
 
 ThreadController cpu;     // thread master, onde as outras vao ser adicionadas
 Thread threadReadPots;    // thread para controlar os pots
@@ -56,6 +55,8 @@ void setup() {
   buttons.begin();
   topPots.begin();
   bottomPots.begin();
+  leftButtons.begin();
+  rightButtons.begin();
   MDCore::begin();
   threadsSetup();
 }

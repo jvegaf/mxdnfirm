@@ -1,13 +1,13 @@
 
 #pragma once
+#include "pin_map.h"
 #include <Arduino.h>
 #include <Multiplexer4067.h>
-#include <stdint.h>
 
 class MuxPots {
 private:
   const uint8_t *elements;
-  const uint8_t t_elements;
+  const uint8_t tElements;
   uint8_t *lastCcValue;
   uint16_t *potCState; // current state
   uint16_t *potPState; // previous state
@@ -20,11 +20,10 @@ private:
   Multiplexer4067 *mplexPots;
 
 public:
-  MuxPots(const uint8_t *mux_pins, const uint8_t sig, const uint8_t *el,
-          const uint8_t t_el)
-      : elements(el), t_elements(t_el) {
-    mplexPots = new Multiplexer4067(mux_pins[0], mux_pins[1], mux_pins[2],
-                                    mux_pins[3], sig);
+  MuxPots(const uint8_t sig, const uint8_t *el, const uint8_t t_el)
+      : elements(el), tElements(t_el) {
+    mplexPots = new Multiplexer4067(muxPins[0], muxPins[1], muxPins[2],
+                                    muxPins[3], sig);
     pTime = new uint32_t[t_el]();
     timer = new uint32_t[t_el]();
     potCState = new uint16_t[t_el]();

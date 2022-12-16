@@ -4,7 +4,7 @@ void MuxPots::begin() { mplexPots->begin(); }
 
 void MuxPots::read(void (*scc_func)(uint8_t, uint8_t, uint8_t),
                    uint8_t midiCh) {
-  for (uint8_t i = 0; i < t_elements; i++) {
+  for (uint8_t i = 0; i < tElements; i++) {
     uint16_t potVar = abs(
         potCState[i] - potPState[i]); // calcula a variacao da porta analogica
     potCState[i] = mplexPots->readChannel(elements[i]);
