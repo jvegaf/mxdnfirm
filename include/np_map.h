@@ -37,5 +37,6 @@ const uint8_t pxDeckLeft[] = {NP_RANGE_L, NP_SYNC_L};
 const uint8_t pxDeckRight[] = {NP_RANGE_R, NP_SYNC_R};
 
 uint8_t const tPxDeck = 2;
+uint8_t const tPxPad = 8;
 
 uint8_t const tPixels = 21;

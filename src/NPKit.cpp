@@ -1,5 +1,4 @@
 #include "NPKit.h"
-#include "pin_map.h"
 
 namespace NPKit {
 Adafruit_NeoPixel np(tPixels, NP_DATA, NEO_GRB + NEO_KHZ800);

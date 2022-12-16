@@ -5,6 +5,7 @@
 #include "MuxPots.h"
 #include "Muxer.h"
 #include "PotKit.h"
+#include "enums.h"
 #include "midi_map.h"
 #include "mpx_map.h"
 #include "np_map.h"
@@ -15,15 +16,14 @@
 #include <ThreadController.h>
 // Rev2 Version
 //
-const uint8_t DECK_B = 2;
-const uint8_t DECK_C = 3;
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-volatile uint8_t deckSelected = DECK_B;
+volatile DeckSelected deckSelected = DeckSelected::DeckB;
+
 BREncoder enc;
 
-Mux selector(lhMPSig, MPlex::DECK_SEL);
+Mux selector(rhMPSig, MPlex::DECK_SEL);
 
 Muxer leftButtons(lhMPSig, MPlex::leftBtns, MPlex::tLeftBtns);
 Muxer rightButtons(rhMPSig, MPlex::rightBtns, MPlex::tRightBtns);
@@ -52,6 +52,7 @@ void sendMidiCC(byte number, byte value, byte channel);
 
 void setup() {
   midiSetup();
+  selector.begin();
   buttons.begin();
   topPots.begin();
   bottomPots.begin();
@@ -104,12 +105,12 @@ void threadsSetup() {
 }
 
 void changeDeck() {
-  if (deckSelected == DECK_B) {
-    deckSelected = DECK_C;
-    MDCore::cChange(1, NP_DECK_SEL, 4);
+  if (deckSelected == DeckSelected::DeckB) {
+    deckSelected = DeckSelected::DeckC;
+    MDCore::changeDeck(deckSelected);
   } else {
-    deckSelected = DECK_B;
-    MDCore::cChange(1, NP_DECK_SEL, 1);
+    deckSelected = DeckSelected::DeckB;
+    MDCore::changeDeck(deckSelected);
   }
 }
 

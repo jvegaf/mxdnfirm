@@ -7,11 +7,17 @@ void Mux::setMuxChannel(uint8_t channel) {
   digitalWrite(muxPins[3], bitRead(channel, 3));
 }
 
-Mux::Mux(const uint8_t sig, const uint8_t pos) : muxSIG(sig), position(pos) {}
+void Mux::begin() {
+  for (uint8_t i = 0; i < tMuxPins; i++) {
+    pinMode(muxPins[i], OUTPUT);
+    digitalWrite(muxPins[i], LOW);
+  }
+  pinMode(sigPin, INPUT_PULLUP);
+}
 
 void Mux::read(void (*func)()) {
   setMuxChannel(position);
-  cState = digitalRead(muxSIG);
+  cState = digitalRead(sigPin);
 
   if ((millis() - lastdebouncetime) > debouncedelay) {
     if (pState != cState) {
