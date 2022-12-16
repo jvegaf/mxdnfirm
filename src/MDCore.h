@@ -5,6 +5,8 @@
 #include "np_map.h"
 #include "pin_map.h"
 #include "sr_map.h"
+#include "leds.h"
+#include "enums.h"
 #include "vumeters.h"
 #include <Arduino.h>
 #include <Shifter.h>

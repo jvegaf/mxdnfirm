@@ -1,6 +1,4 @@
 #include "MDCore.h"
-#include "NPKit.h"
-#include "vumeters.h"
 
 namespace MDCore {
 
@@ -9,6 +7,7 @@ void setInitialDeckB() { NPKit::handleChange(NP_DECK_SEL, 1); }
 void begin() {
   VUmeters::begin();
   NPKit::begin();
+  Leds::begin();
   setInitialDeckB();
 }
 
@@ -28,23 +27,11 @@ void cChange(uint8_t channel, uint8_t number, uint8_t value) {
 }
 
 void noteOn(uint8_t channel, uint8_t number, uint8_t value) {
-  for (int i = 0; i < nSetAmount; i++) {
-    if (noteSet[i] != number) {
-      continue;
-    }
-    fbackSR.setPin(i, HIGH);
-    fbackSR.write();
-  }
+  Leds::setElement(number, State::On);
 }
 
 void noteOff(uint8_t channel, uint8_t number, uint8_t value) {
-  for (int i = 0; i < nSetAmount; i++) {
-    if (noteSet[i] != number) {
-      continue;
-    }
-    fbackSR.setPin(i, LOW);
-    fbackSR.write();
-  }
+  Leds::setElement(number, State::Off);
 }
 
 } // namespace MDCore
