@@ -1,6 +1,6 @@
 #include "Led.h"
 
-Led::setState(State state) {
+void Led::setState(uint8_t state) {
   controller->setPin(position, state);
   controller->write();
 }

@@ -48,7 +48,7 @@ void begin() {
   fbRight.write();
 }
 
-void setElement(uint8_t pos, State state) {
+void setElement(uint8_t pos, uint8_t state) {
   fbElements[pos].setState(state);
 }
 }

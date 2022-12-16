@@ -1,4 +1,5 @@
 #include "MDCore.h"
+#include "Arduino.h"
 
 namespace MDCore {
 
@@ -27,11 +28,11 @@ void cChange(uint8_t channel, uint8_t number, uint8_t value) {
 }
 
 void noteOn(uint8_t channel, uint8_t number, uint8_t value) {
-  Leds::setElement(number, State::On);
+  Leds::setElement(number, HIGH);
 }
 
 void noteOff(uint8_t channel, uint8_t number, uint8_t value) {
-  Leds::setElement(number, State::Off);
+  Leds::setElement(number, LOW);
 }
 
 } // namespace MDCore
