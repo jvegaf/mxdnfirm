@@ -12,8 +12,8 @@ private:
   uint16_t *p_state;
   uint16_t *c_state;
 
-  uint32_t *lastdebouncetime = 0;
-  uint32_t debouncedelay{20};
+  uint32_t *lastdebouncetime;
+  const uint32_t debouncedelay = 20;
 
   void setMuxChannel(uint8_t channel);
 

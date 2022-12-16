@@ -68,6 +68,6 @@ uint8_t const leftBtnsChannel = 1;
 uint8_t const rightBtnsChannel = 2;
 uint8_t const buttonsChannel = 3;
 
-uint8_t const topPotsChannel = 1;
-uint8_t const bottomPotsChannel = 2;
-uint8_t const potsChannel = 3;
+uint8_t const topPotsChannel = 5;
+uint8_t const bottomPotsChannel = 6;
+uint8_t const potsChannel = 7;

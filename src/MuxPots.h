@@ -2,18 +2,20 @@
 #pragma once
 #include <Arduino.h>
 #include <Multiplexer4067.h>
+#include <stdint.h>
 
 class MuxPots {
 private:
   const uint8_t *elements;
   const uint8_t t_elements;
+  uint8_t *lastCcValue;
   uint16_t *potCState; // current state
   uint16_t *potPState; // previous state
   uint32_t *pTime;
   uint32_t *timer;
 
   const uint16_t kThreshold = 8;
-  const uint32_t kTimeout = 50;
+  const uint16_t kTimeout = 50;
 
   Multiplexer4067 *mplexPots;
 
@@ -27,6 +29,7 @@ public:
     timer = new uint32_t[t_el]();
     potCState = new uint16_t[t_el]();
     potPState = new uint16_t[t_el]();
+    lastCcValue = new uint8_t[t_el]();
   }
 
   void begin();
