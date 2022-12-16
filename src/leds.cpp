@@ -39,8 +39,6 @@ Led fbElements[] {
   fx1Right,
 };
 
-uint8_t const tLeds = 15;
-
 void begin() {
   fbLeft.clear();
   fbRight.clear();
