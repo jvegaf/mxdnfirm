@@ -1,7 +1,7 @@
 
 #pragma once
 #include "NPKit.h"
-#include "enums.h"
+#include "base.h"
 #include "leds.h"
 #include "midi_map.h"
 #include "np_map.h"

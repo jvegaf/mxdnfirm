@@ -5,7 +5,7 @@
 #include "MuxPots.h"
 #include "Muxer.h"
 #include "PotKit.h"
-#include "enums.h"
+#include "base.h"
 #include "midi_map.h"
 #include "mpx_map.h"
 #include "np_map.h"

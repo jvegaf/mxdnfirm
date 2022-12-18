@@ -1,8 +1,4 @@
 #include "MDCore.h"
-#include "NPKit.h"
-#include "enums.h"
-#include "np_map.h"
-#include <stdint.h>
 
 namespace MDCore {
 

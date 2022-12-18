@@ -56,18 +56,6 @@ const uint8_t rightBtns[] = {CUE_RH,  PLAY_RH, RNG_RH, LOOP_RH, PCUE3,
 
 const uint8_t tRightBtns = 15;
 
-uint8_t const PFXL_1 = 0;
-uint8_t const PFXL_2 = 1;
-uint8_t const PFXL_3 = 2;
-uint8_t const GAIN_A = 3;
-uint8_t const GAIN_B = 4;
-uint8_t const GAIN_C = 5;
-uint8_t const PFXR_2 = 6;
-uint8_t const PFXR_3 = 7;
-uint8_t const TREB_A = 8;
-uint8_t const TREB_B = 9;
-uint8_t const TREB_C = 10;
-
 uint8_t const tPadBtns = 8;
 uint8_t const tDeckBtns = 5;
 
@@ -85,6 +73,18 @@ const uint8_t padRightBtns[] = {RPAD1, RPAD2, RPAD3, RPAD4,
 ////////////////////////////////////////////////////////
 ////                 MPLEX POTS                    /////
 ////////////////////////////////////////////////////////
+
+uint8_t const PFXL_1 = 0;
+uint8_t const PFXL_2 = 1;
+uint8_t const PFXL_3 = 2;
+uint8_t const GAIN_A = 3;
+uint8_t const GAIN_B = 4;
+uint8_t const GAIN_C = 5;
+uint8_t const PFXR_2 = 6;
+uint8_t const PFXR_3 = 7;
+uint8_t const TREB_A = 8;
+uint8_t const TREB_B = 9;
+uint8_t const TREB_C = 10;
 
 const uint8_t topPots[] = {PFXL_1, PFXL_2, PFXL_3, GAIN_A, GAIN_B, GAIN_C,
                            PFXR_2, PFXR_3, TREB_A, TREB_B, TREB_C};
