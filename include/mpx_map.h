@@ -31,30 +31,6 @@ const uint8_t leftBtns[] = {PCUE2,   PCUE1,  SHIFT, LOOP_LH, SYNC_LH, RNG_LH,
 
 uint8_t const tLeftBtns = 16;
 
-uint8_t const tPadBtns = 8;
-
-const uint8_t padLeftBtns[] = {
-LPAD1,
-LPAD2,
-LPAD3,
-LPAD4,
-LPAD5,
-LPAD6,
-LPAD7,
-LPAD8,
-};
-
-const uint8_t padRightBtns[] = {
-LPAD1,
-LPAD2,
-LPAD3,
-LPAD4,
-LPAD5,
-LPAD6,
-LPAD7,
-LPAD8,
-}
-
 ///////////////////////////////
 ///     MPLEX RIGHT          ///
 ///////////////////////////////
@@ -91,6 +67,24 @@ uint8_t const PFXR_3 = 7;
 uint8_t const TREB_A = 8;
 uint8_t const TREB_B = 9;
 uint8_t const TREB_C = 10;
+
+uint8_t const tPadBtns = 8;
+uint8_t const tDeckBtns = 5;
+
+const uint8_t deckLeftBtns[] = {CUE_LH, PLAY_LH, RNG_LH, LOOP_LH, SYNC_LH};
+
+const uint8_t padLeftBtns[] = {
+    LPAD1, LPAD2, LPAD3, LPAD4, LPAD5, LPAD6, LPAD7, LPAD8,
+};
+
+const uint8_t deckRightBtns[] = {CUE_RH, PLAY_RH, RNG_RH, LOOP_RH, SYNC_RH};
+
+const uint8_t padRightBtns[] = {RPAD1, RPAD2, RPAD3, RPAD4,
+                                RPAD5, RPAD6, RPAD7, RPAD8};
+
+////////////////////////////////////////////////////////
+////                 MPLEX POTS                    /////
+////////////////////////////////////////////////////////
 
 const uint8_t topPots[] = {PFXL_1, PFXL_2, PFXL_3, GAIN_A, GAIN_B, GAIN_C,
                            PFXR_2, PFXR_3, TREB_A, TREB_B, TREB_C};
