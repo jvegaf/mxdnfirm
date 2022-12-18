@@ -1,5 +1,6 @@
 #include "BREncoder.h"
 #include "BtnKit.h"
+#include "Deck.h"
 #include "MDCore.h"
 #include "Mux.h"
 #include "MuxPots.h"
@@ -25,8 +26,11 @@ BREncoder enc;
 
 Mux selector(rhMPSig, MPlex::DECK_SEL);
 
-Muxer leftButtons(lhMPSig, MPlex::leftBtnsCollection);
-Muxer rightButtons(rhMPSig, MPlex::rightBtnsCollection);
+Muxer deckLeftMuxer(lhMPSig, MPlex::deckLeftBtnsCol);
+Muxer deckRightMuxer(rhMPSig, MPlex::deckRightBtnsCol);
+
+Deck deckLeft(&deckLeftMuxer);
+Deck deckRight(&deckRightMuxer);
 
 MuxPots topPots(topPotsSig, MPlex::topPots, MPlex::tTopPots);
 MuxPots bottomPots(btmPotsSig, MPlex::bottomPots, MPlex::tBottomPots);
@@ -56,8 +60,8 @@ void setup() {
   buttons.begin();
   topPots.begin();
   bottomPots.begin();
-  leftButtons.begin();
-  rightButtons.begin();
+  deckLeft.begin();
+  deckRight.begin();
   MDCore::begin();
   threadsSetup();
 }
@@ -116,8 +120,8 @@ void changeDeck() {
 
 void readButtons() {
   selector.read(changeDeck);
-  leftButtons.read(sendMidiNote, leftBtnsChannel);
-  rightButtons.read(sendMidiNote, rightBtnsChannel);
+  deckLeft.read(sendMidiNote, leftBtnsChannel);
+  deckRight.read(sendMidiNote, rightBtnsChannel);
   buttons.read(sendMidiNote, buttonsChannel);
 }
 

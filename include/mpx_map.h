@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Arduino.h>
 #include "base.h"
+#include <Arduino.h>
 
 namespace MPlex {
 
@@ -32,10 +32,7 @@ const uint8_t leftBtns[] = {PCUE2,   PCUE1,  SHIFT, LOOP_LH, SYNC_LH, RNG_LH,
 
 uint8_t const tLeftBtns = 16;
 
-ElemCollection leftBtnsCollection = {
-  leftBtns,
-  tLeftBtns
-};
+ElemCollection leftBtnsCollection = {leftBtns, tLeftBtns};
 
 ///////////////////////////////
 ///     MPLEX RIGHT          ///
@@ -62,15 +59,14 @@ const uint8_t rightBtns[] = {CUE_RH,  PLAY_RH, RNG_RH, LOOP_RH, PCUE3,
 
 const uint8_t tRightBtns = 15;
 
-ElemCollection rightBtnsCollection = {
-  rightBtns,
-  tRightBtns
-};
+ElemCollection rightBtnsCollection = {rightBtns, tRightBtns};
 
 uint8_t const tPadBtns = 8;
 uint8_t const tDeckBtns = 5;
 
 const uint8_t deckLeftBtns[] = {CUE_LH, PLAY_LH, RNG_LH, LOOP_LH, SYNC_LH};
+
+ElemCollection deckLeftBtnsCol = {deckLeftBtns, tDeckBtns};
 
 const uint8_t padLeftBtns[] = {
     LPAD1, LPAD2, LPAD3, LPAD4, LPAD5, LPAD6, LPAD7, LPAD8,
@@ -80,6 +76,8 @@ const uint8_t deckRightBtns[] = {CUE_RH, PLAY_RH, RNG_RH, LOOP_RH, SYNC_RH};
 
 const uint8_t padRightBtns[] = {RPAD1, RPAD2, RPAD3, RPAD4,
                                 RPAD5, RPAD6, RPAD7, RPAD8};
+
+ElemCollection deckRightBtnsCol = {deckRightBtns, tDeckBtns};
 
 ////////////////////////////////////////////////////////
 ////                 MPLEX POTS                    /////
