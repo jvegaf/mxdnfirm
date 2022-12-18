@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pin_map.h"
+#include "base.h"
 #include <Arduino.h>
 
 class Muxer {
@@ -17,11 +18,11 @@ private:
   void setMuxChannel(uint8_t channel);
 
 public:
-  Muxer(const uint8_t sig, const uint8_t *el, const uint8_t t_el)
-      : sigPin(sig), elements(el), tElements(t_el) {
-    pState = new uint16_t[t_el]();
-    cState = new uint16_t[t_el]();
-    lastdebouncetime = new uint32_t[t_el]();
+  Muxer(const uint8_t sig, ElemCollection col)
+      : sigPin(sig), elements(col.elements), tElements(col.size) {
+    pState = new uint16_t[col.size]();
+    cState = new uint16_t[col.size]();
+    lastdebouncetime = new uint32_t[col.size]();
   }
 
   void begin();

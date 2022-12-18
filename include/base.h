@@ -9,3 +9,10 @@ enum class DeckSelected : uint8_t {
 };
 
 enum class Location { Left, Right };
+
+
+struct ElemCollection
+{
+  const uint8_t* elements;
+  uint8_t const size;
+};

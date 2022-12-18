@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Arduino.h>
+#include "base.h"
 
 namespace MPlex {
 
@@ -31,6 +32,11 @@ const uint8_t leftBtns[] = {PCUE2,   PCUE1,  SHIFT, LOOP_LH, SYNC_LH, RNG_LH,
 
 uint8_t const tLeftBtns = 16;
 
+ElemCollection leftBtnsCollection = {
+  leftBtns,
+  tLeftBtns
+};
+
 ///////////////////////////////
 ///     MPLEX RIGHT          ///
 ///////////////////////////////
@@ -55,6 +61,11 @@ const uint8_t rightBtns[] = {CUE_RH,  PLAY_RH, RNG_RH, LOOP_RH, PCUE3,
                              RPAD2,   RPAD6,   RPAD1,  RPAD5};
 
 const uint8_t tRightBtns = 15;
+
+ElemCollection rightBtnsCollection = {
+  rightBtns,
+  tRightBtns
+};
 
 uint8_t const tPadBtns = 8;
 uint8_t const tDeckBtns = 5;

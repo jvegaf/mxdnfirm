@@ -25,8 +25,8 @@ BREncoder enc;
 
 Mux selector(rhMPSig, MPlex::DECK_SEL);
 
-Muxer leftButtons(lhMPSig, MPlex::leftBtns, MPlex::tLeftBtns);
-Muxer rightButtons(rhMPSig, MPlex::rightBtns, MPlex::tRightBtns);
+Muxer leftButtons(lhMPSig, MPlex::leftBtnsCollection);
+Muxer rightButtons(rhMPSig, MPlex::rightBtnsCollection);
 
 MuxPots topPots(topPotsSig, MPlex::topPots, MPlex::tTopPots);
 MuxPots bottomPots(btmPotsSig, MPlex::bottomPots, MPlex::tBottomPots);
