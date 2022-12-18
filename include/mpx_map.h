@@ -31,7 +31,31 @@ const uint8_t leftBtns[] = {PCUE2,   PCUE1,  SHIFT, LOOP_LH, SYNC_LH, RNG_LH,
 
 uint8_t const tLeftBtns = 16;
 
-////////////////////////////////
+uint8_t const tPadBtns = 8;
+
+const uint8_t padLeftBtns[] = {
+LPAD1,
+LPAD2,
+LPAD3,
+LPAD4,
+LPAD5,
+LPAD6,
+LPAD7,
+LPAD8,
+};
+
+const uint8_t padRightBtns[] = {
+LPAD1,
+LPAD2,
+LPAD3,
+LPAD4,
+LPAD5,
+LPAD6,
+LPAD7,
+LPAD8,
+}
+
+///////////////////////////////
 ///     MPLEX RIGHT          ///
 ///////////////////////////////
 uint8_t const CUE_RH = 0;
