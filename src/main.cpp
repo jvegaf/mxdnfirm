@@ -5,6 +5,7 @@
 #include "Mux.h"
 #include "MuxPots.h"
 #include "Muxer.h"
+#include "Pad.h"
 #include "PotKit.h"
 #include "base.h"
 #include "midi_map.h"
@@ -15,12 +16,14 @@
 #include <MIDI.h>
 #include <Thread.h>
 #include <ThreadController.h>
+#include <stdint.h>
 // Rev2 Version
 //
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-volatile DeckSelected deckSelected = DeckSelected::DeckB;
+uint8_t deckMidiChannels[] = {deckAChannel, deckBChannel};
+uint8_t padMidiChannels[] = {padAChannel, padBChannel};
 
 BREncoder enc;
 
@@ -28,9 +31,14 @@ Mux selector(rhMPSig, MPlex::DECK_SEL);
 
 Muxer deckLeftMuxer(lhMPSig, MPlex::deckLeftBtnsCol);
 Muxer deckRightMuxer(rhMPSig, MPlex::deckRightBtnsCol);
+Muxer padLeftMuxer(lhMPSig, MPlex::padLeftBtnsCol);
+Muxer padRightMuxer(rhMPSig, MPlex::padRightBtnsCol);
 
-Deck deckLeft(&deckLeftMuxer);
-Deck deckRight(&deckRightMuxer);
+DeckControl deckLeft(&deckLeftMuxer);
+DeckControl deckRight(&deckRightMuxer);
+
+PadControl padLeft(&padLeftMuxer);
+PadControl padRight(&padRightMuxer);
 
 MuxPots topPots(topPotsSig, MPlex::topPots, MPlex::tTopPots);
 MuxPots bottomPots(btmPotsSig, MPlex::bottomPots, MPlex::tBottomPots);
@@ -43,16 +51,16 @@ Thread threadReadPots;    // thread para controlar os pots
 Thread threadReadButtons; // thread para controlar os botoes
 
 void changeDeck();
-void handleControlChange(byte channel, byte number, byte value);
-void handleNoteOn(byte channel, byte number, byte value);
-void handleNoteOff(byte channel, byte number, byte value);
+void handleControlChange(uint8_t channel, uint8_t number, uint8_t value);
+void handleNoteOn(uint8_t channel, uint8_t number, uint8_t value);
+void handleNoteOff(uint8_t channel, uint8_t number, uint8_t value);
 void midiSetup();
 void threadsSetup();
 void readButtons();
 void readPots();
 void readEncoder();
-void sendMidiNote(byte number, byte value, byte channel);
-void sendMidiCC(byte number, byte value, byte channel);
+void sendMidiNote(uint8_t number, uint8_t value, uint8_t channel);
+void sendMidiCC(uint8_t number, uint8_t value, uint8_t channel);
 
 void setup() {
   midiSetup();
@@ -62,6 +70,8 @@ void setup() {
   bottomPots.begin();
   deckLeft.begin();
   deckRight.begin();
+  padLeft.begin();
+  padRight.begin();
   MDCore::begin();
   threadsSetup();
 }
@@ -72,18 +82,18 @@ void loop() {
   readEncoder();
 }
 
-void handleControlChange(byte channel, byte number, byte value) {
+void handleControlChange(uint8_t channel, uint8_t number, uint8_t value) {
   MDCore::cChange(channel, number, value);
 }
 
-void handleNoteOn(byte channel, byte number, byte value) {
+void handleNoteOn(uint8_t channel, uint8_t number, uint8_t value) {
   if (value < 1U) {
     MDCore::noteOff(channel, number, value);
     return;
   }
   MDCore::noteOn(channel, number, value);
 }
-void handleNoteOff(byte channel, byte number, byte value) {
+void handleNoteOff(uint8_t channel, uint8_t number, uint8_t value) {
   MDCore::noteOff(channel, number, value);
 }
 
@@ -109,20 +119,23 @@ void threadsSetup() {
 }
 
 void changeDeck() {
-  if (deckSelected == DeckSelected::DeckB) {
-    deckSelected = DeckSelected::DeckC;
-    MDCore::changeDeck(deckSelected);
+  if (deckMidiChannels[1] == deckBChannel) {
+    deckMidiChannels[1] = deckCChannel;
+    padMidiChannels[1] = padCChannel;
+    MDCore::changeDeck(deckCChannel);
   } else {
-    deckSelected = DeckSelected::DeckB;
-    MDCore::changeDeck(deckSelected);
+    deckMidiChannels[1] = deckBChannel;
+    padMidiChannels[1] = padBChannel;
+    MDCore::changeDeck(deckBChannel);
   }
 }
 
 void readButtons() {
   selector.read(changeDeck);
-  deckLeft.read(sendMidiNote, leftBtnsChannel);
-  deckRight.read(sendMidiNote, rightBtnsChannel);
-  buttons.read(sendMidiNote, buttonsChannel);
+  deckLeft.read(sendMidiNote, deckMidiChannels[0]);
+  deckRight.read(sendMidiNote, deckMidiChannels[1]);
+  padLeft.read(sendMidiNote, padMidiChannels[0]);
+  padRight.read(sendMidiNote, padMidiChannels[1]);
 }
 
 void readPots() {
@@ -133,10 +146,10 @@ void readPots() {
 
 void readEncoder() { enc.readEnc(sendMidiCC); }
 
-void sendMidiNote(byte number, byte value, byte channel) {
+void sendMidiNote(uint8_t number, uint8_t value, uint8_t channel) {
   MIDI.sendNoteOn(number, value, channel);
 }
 
-void sendMidiCC(byte number, byte value, byte channel) {
+void sendMidiCC(uint8_t number, uint8_t value, uint8_t channel) {
   MIDI.sendControlChange(number, value, channel);
 }

@@ -64,10 +64,16 @@ uint8_t const LEVEL_DECK_A = 2;
 uint8_t const LEVEL_DECK_B = 1;
 uint8_t const LEVEL_DECK_C = 0;
 
-uint8_t const leftBtnsChannel = 1;
-uint8_t const rightBtnsChannel = 2;
-uint8_t const buttonsChannel = 3;
+uint8_t const deckAChannel = 1;
+uint8_t const deckBChannel = 2;
+uint8_t const deckCChannel = 3;
 
-uint8_t const topPotsChannel = 5;
-uint8_t const bottomPotsChannel = 6;
+uint8_t const padAChannel = 4;
+uint8_t const padBChannel = 5;
+uint8_t const padCChannel = 6;
+
 uint8_t const potsChannel = 7;
+uint8_t const topPotsChannel = 8;
+uint8_t const bottomPotsChannel = 9;
+
+uint8_t const mixerChannel = 10;

@@ -1,4 +1,7 @@
 #include "MDCore.h"
+#include "base.h"
+#include "midi_map.h"
+#include <stdint.h>
 
 namespace MDCore {
 
@@ -18,7 +21,7 @@ void begin() {
   VUmeters::begin();
   NPKit::begin();
   Leds::begin();
-  changeDeck(DeckSelected::DeckB);
+  changeDeck(deckBChannel);
   setPadsColor(Location::Left, 1);
   setPadsColor(Location::Right, 1);
 }
@@ -46,11 +49,12 @@ void noteOff(uint8_t channel, uint8_t number, uint8_t value) {
   Leds::setElement(number, LOW);
 }
 
-void changeDeck(DeckSelected deck) {
-  if (deck == DeckSelected::DeckB) {
-    NPKit::handleChange(NP_DECK_SEL, 1);
-    return;
+void changeDeck(uint8_t deck) {
+  uint8_t color = deckBColor;
+  if (deck == deckCChannel) {
+    color = deckCColor;
   }
-  NPKit::handleChange(NP_DECK_SEL, 2);
+
+  NPKit::handleChange(NP_DECK_SEL, color);
 }
 } // namespace MDCore

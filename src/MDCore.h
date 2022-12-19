@@ -10,6 +10,7 @@
 #include "vumeters.h"
 #include <Arduino.h>
 #include <Shifter.h>
+#include <stdint.h>
 
 namespace MDCore {
 
@@ -17,5 +18,5 @@ void begin();
 void noteOff(uint8_t channel, uint8_t number, uint8_t value);
 void cChange(uint8_t channel, uint8_t number, uint8_t value);
 void noteOn(uint8_t channel, uint8_t number, uint8_t value);
-void changeDeck(DeckSelected deck);
+void changeDeck(uint8_t deck);
 } // namespace MDCore

@@ -3,9 +3,9 @@
 #include "Muxer.h"
 #include <Arduino.h>
 
-class DeckControl {
+class PadControl {
 public:
-  DeckControl(Muxer *m) : muxer(m) {}
+  PadControl(Muxer *m) : muxer(m) {}
 
   void begin();
   void read(void (*func)(uint8_t, uint8_t, uint8_t), uint8_t midiCh);
