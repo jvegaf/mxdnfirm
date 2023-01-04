@@ -17,8 +17,7 @@
 #include <Thread.h>
 #include <ThreadController.h>
 #include <stdint.h>
-// Rev2 Version
-//
+
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
