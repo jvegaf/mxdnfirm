@@ -64,7 +64,7 @@ jobs:
         fi
 
     - name: 📤 Upload Staging Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: staging-firmware
         path: .pio/build/mega/firmware.hex
@@ -135,7 +135,7 @@ jobs:
         chmod +x release-package/install.sh
 
     - name: 📤 Upload Production Package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: production-release
         path: release-package/
