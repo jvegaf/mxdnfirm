@@ -32,7 +32,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 🐍 Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -64,7 +64,7 @@ jobs:
         fi
 
     - name: 📤 Upload Staging Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: staging-firmware
         path: .pio/build/mega/firmware.hex
@@ -85,7 +85,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 🐍 Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
@@ -135,7 +135,7 @@ jobs:
         chmod +x release-package/install.sh
 
     - name: 📤 Upload Production Package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: production-release
         path: release-package/
