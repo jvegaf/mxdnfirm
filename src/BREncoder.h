@@ -6,82 +6,72 @@
 #include <Encoder.h>
 
 /**
- * @brief Clase para manejo de encoders rotativos del browser
- * Gestiona encoders izquierdo y derecho con debouncing y validación
+ * @brief Class for browser rotary encoder management
+ * Manages left and right encoders with debouncing and validation
  */
 class BREncoder {
 public:
-  // Configuración de encoders
-  struct EncoderConfig {
-    uint8_t ccNumberCW;      // Control Change para rotación horaria
-    uint8_t ccNumberCCW;     // Control Change para rotación antihoraria  
-    uint8_t valueCW;         // Valor MIDI para rotación horaria
-    uint8_t valueCCW;        // Valor MIDI para rotación antihoraria
-    uint8_t midiChannel;     // Canal MIDI
-    uint16_t debounceMs;     // Tiempo de debounce en ms
+  // Encoder configuration
+  struct EncoderConfig {    uint8_t ccNumberCW;      // Control Change for clockwise rotation
+    uint8_t ccNumberCCW;     // Control Change for counterclockwise rotation  
+    uint8_t valueCW;         // MIDI value for clockwise rotation
+    uint8_t valueCCW;        // MIDI value for counterclockwise rotation
+    uint8_t midiChannel;     // MIDI channel
+    uint16_t debounceMs;     // Debounce time in ms
   };
 
   BREncoder();
   ~BREncoder();
-  
-  /**
-   * @brief Inicializa los encoders
-   * @return true si la inicialización fue exitosa
+    /**
+   * @brief Initializes the encoders
+   * @return true if initialization was successful
    */
   bool begin();
-  
-  /**
-   * @brief Lee el estado de los encoders y envía MIDI si hay cambios
-   * @param scc_func Función callback para enviar Control Change
+    /**
+   * @brief Reads encoder state and sends MIDI if there are changes
+   * @param scc_func Callback function to send Control Change
    */
   void readEnc(void (*scc_func)(uint8_t, uint8_t, uint8_t));
-  
-  /**
-   * @brief Configura los parámetros de un encoder específico
-   * @param isLeft true para encoder izquierdo, false para derecho
-   * @param config Configuración del encoder
+    /**
+   * @brief Configures parameters for a specific encoder
+   * @param isLeft true for left encoder, false for right
+   * @param config Encoder configuration
    */
   void configureEncoder(bool isLeft, const EncoderConfig& config);
-  
-  /**
-   * @brief Resetea las posiciones de los encoders
+    /**
+   * @brief Resets encoder positions
    */
   void reset();
-  
-  /**
-   * @brief Obtiene la posición actual de un encoder
-   * @param isLeft true para encoder izquierdo, false para derecho
-   * @return Posición actual del encoder
+    /**
+   * @brief Gets the current position of an encoder
+   * @param isLeft true for left encoder, false for right
+   * @return Current encoder position
    */
   long getPosition(bool isLeft) const;
-  
-  /**
-   * @brief Verifica si el sistema está inicializado
+    /**
+   * @brief Verifies if the system is initialized
    */
   bool isReady() const { return initialized; }
 
 private:
   Encoder* leftEncoder;
   Encoder* rightEncoder;
-  
-  // Estados anteriores
+    // Previous states
   long oldLeft;
   long oldRight;
   
   // Timestamps para debouncing
   unsigned long lastLeftChange;
   unsigned long lastRightChange;
-  
-  // Configuraciones
+    // Configurations
   EncoderConfig leftConfig;
   EncoderConfig rightConfig;
   
   bool initialized;
-  
-  /**
-   * @brief Procesa cambios en un encoder específico
-   * @param isLeft true para encoder izquierdo
-   * @param scc_func Función callback para MIDI
+    /**
+   * @brief Processes changes in a specific encoder
+   * @param isLeft true for left encoder
+   * @param scc_func Callback function for MIDI
    */
   void processEncoder(bool isLeft, void (*scc_func)(uint8_t, uint8_t, uint8_t));
 };

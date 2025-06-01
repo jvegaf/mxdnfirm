@@ -32,7 +32,7 @@ unsigned long PadControl::getTimeSinceLastRead() const {
 
 void PadControl::reset() {
   lastReadTime = millis();
-  // Aquí se podrían resetear otros estados internos si fuera necesario
+  // Here other internal states could be reset if necessary
 }
 
 bool PadControl::validateParameters(void (*func)(uint8_t, uint8_t, uint8_t)) const {

@@ -1,6 +1,6 @@
 #include "BREncoder.h"
 
-// Configuración por defecto para los encoders
+// Default configuration for encoders
 const BREncoder::EncoderConfig DEFAULT_LEFT_CONFIG = {
   .ccNumberCW = 14,
   .ccNumberCCW = 14, 
@@ -44,8 +44,7 @@ bool BREncoder::begin() {
     if (!leftEncoder || !rightEncoder) {
       return false;
     }
-    
-    // Leer posiciones iniciales
+      // Read initial positions
     oldLeft = leftEncoder->read();
     oldRight = rightEncoder->read();
     
@@ -62,9 +61,8 @@ void BREncoder::readEnc(void (*scc_func)(uint8_t, uint8_t, uint8_t)) {
   if (!initialized || !scc_func) {
     return;
   }
-  
-  processEncoder(true, scc_func);   // Encoder izquierdo
-  processEncoder(false, scc_func);  // Encoder derecho
+    processEncoder(true, scc_func);   // Left encoder
+  processEncoder(false, scc_func);  // Right encoder
 }
 
 void BREncoder::processEncoder(bool isLeft, void (*scc_func)(uint8_t, uint8_t, uint8_t)) {
@@ -77,18 +75,17 @@ void BREncoder::processEncoder(bool isLeft, void (*scc_func)(uint8_t, uint8_t, u
   
   long newPosition = encoder->read();
   unsigned long currentTime = millis();
-  
-  // Verificar si hay cambio y si ha pasado el tiempo de debounce
+    // Check if there is change and if debounce time has passed
   if (newPosition != oldPosition && 
       (currentTime - lastChange) >= config.debounceMs) {
     
     long delta = newPosition - oldPosition;
     
     if (delta > 0) {
-      // Rotación horaria
+      // Clockwise rotation
       scc_func(config.ccNumberCW, config.valueCW, config.midiChannel);
     } else if (delta < 0) {
-      // Rotación antihoraria  
+      // Counterclockwise rotation  
       scc_func(config.ccNumberCCW, config.valueCCW, config.midiChannel);
     }
     
