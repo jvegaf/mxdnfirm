@@ -80,6 +80,7 @@ jobs:
 
     - name: 📋 Validate PR Title
       run: |
+        #!/bin/bash
         PR_TITLE="${{ github.event.pull_request.title }}"
         echo "Validating PR title: $PR_TITLE"
         
