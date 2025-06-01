@@ -14,9 +14,16 @@
 
 namespace MDCore {
 
-void begin();
+// Core functionality
+bool begin();  // Changed to return bool for error checking
 void noteOff(uint8_t channel, uint8_t number, uint8_t value);
 void cChange(uint8_t channel, uint8_t number, uint8_t value);
 void noteOn(uint8_t channel, uint8_t number, uint8_t value);
 void changeDeck(uint8_t deck);
+
+// Utility functions for testing and debugging
+bool isReady();
+uint8_t getLastError();
+void clearError();
+
 } // namespace MDCore

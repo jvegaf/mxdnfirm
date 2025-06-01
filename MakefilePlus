@@ -1,0 +1,215 @@
+# Makefile para el controlador MIDI
+# Facilita la compilación, testing y deployment
+
+.PHONY: build upload test clean format docs help
+
+# Configuración por defecto
+ENVIRONMENT ?= mega
+PORT ?= auto
+
+# Colores para output
+GREEN := \033[0;32m
+YELLOW := \033[1;33m
+RED := \033[0;31m
+NC := \033[0m # No Color
+
+help: ## Muestra esta ayuda
+	@echo "$(GREEN)Controlador MIDI - Comandos disponibles:$(NC)"
+	@echo ""
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(YELLOW)%-15s$(NC) %s\n", $$1, $$2}'
+	@echo ""
+
+build: ## Compila el proyecto para Arduino
+	@echo "$(GREEN)Compilando proyecto para $(ENVIRONMENT)...$(NC)"
+	pio run -e $(ENVIRONMENT)
+
+upload: ## Sube el código al Arduino
+	@echo "$(GREEN)Subiendo código al Arduino...$(NC)"
+	pio run -e $(ENVIRONMENT) -t upload
+
+monitor: ## Abre el monitor serial
+	@echo "$(GREEN)Abriendo monitor serial...$(NC)"
+	pio device monitor
+
+test: ## Ejecuta todos los tests unitarios
+	@echo "$(GREEN)Ejecutando tests unitarios...$(NC)"
+	pio test -e native
+
+test-verbose: ## Ejecuta tests con output verbose
+	@echo "$(GREEN)Ejecutando tests con output detallado...$(NC)"
+	pio test -e native -v
+
+clean: ## Limpia archivos de compilación
+	@echo "$(YELLOW)Limpiando archivos de compilación...$(NC)"
+	pio run -t clean
+
+format: ## Formatea el código usando clang-format
+	@echo "$(GREEN)Formateando código...$(NC)"
+	find src/ -name "*.cpp" -o -name "*.h" | xargs clang-format -i --style=Google
+	find test/ -name "*.cpp" -o -name "*.h" | xargs clang-format -i --style=Google
+
+lint: ## Analiza el código en busca de problemas
+	@echo "$(GREEN)Analizando código...$(NC)"
+	pio check
+
+docs: ## Genera documentación
+	@echo "$(GREEN)Generando documentación...$(NC)"
+	doxygen Doxyfile
+
+install-deps: ## Instala dependencias del proyecto
+	@echo "$(GREEN)Instalando dependencias...$(NC)"
+	pio lib install
+
+update-deps: ## Actualiza dependencias
+	@echo "$(GREEN)Actualizando dependencias...$(NC)"
+	pio lib update
+
+# Targets específicos para desarrollo
+dev-build: ## Compilación rápida para desarrollo
+	pio run -e $(ENVIRONMENT) --disable-auto-clean
+
+dev-upload: dev-build upload ## Compilación y subida rápida
+
+# Targets específicos para testing
+test-mdcore: ## Ejecuta solo tests de MDCore
+	@echo "$(GREEN)Ejecutando tests de MDCore...$(NC)"
+	pio test -e native -f test_mdcore
+
+test-deck: ## Ejecuta solo tests de Deck
+	@echo "$(GREEN)Ejecutando tests de Deck...$(NC)"
+	pio test -e native -f test_deck
+
+test-main: ## Ejecuta solo tests de main
+	@echo "$(GREEN)Ejecutando tests de main...$(NC)"
+	pio test -e native -f test_main
+
+test-potkit:
+	@echo "Running PotKit tests..."
+	@pio test -e native -f test_potkit
+
+test-btnkit:
+	@echo "Running BtnKit tests..."
+	@pio test -e native -f test_btnkit
+
+test-npkit:
+	@echo "Running NPKit tests..."
+	@pio test -e native -f test_npkit
+
+test-integration:
+	@echo "Running integration tests..."
+	@pio test -e native -f test_integration
+
+test-all-components: test-mdcore test-deck test-brencoder test-muxpots test-potkit test-btnkit test-npkit
+	@echo "All component tests completed!"
+
+test-full: test-all-components test-integration test-main
+	@echo "Full test suite completed!"
+
+# Performance and benchmarking
+benchmark:
+	@echo "Running performance benchmarks..."
+	@pio test -e native -f test_integration --verbose
+
+# Code coverage (if available)
+coverage:
+	@echo "Generating code coverage report..."
+	@pio test -e native --verbose
+
+# Static analysis
+lint:
+	@echo "Running static analysis..."
+	@pio check
+
+# Memory analysis
+memory-check:
+	@echo "Checking memory usage..."
+	@pio run -e mega --target size
+
+# Clean everything
+clean-all: clean
+	@echo "Cleaning test artifacts..."
+	@rm -rf .pio/test
+
+# Generate documentation
+docs:
+	@echo "Generating documentation..."
+	@doxygen Doxyfile 2>/dev/null || echo "Doxygen not available"
+
+# Help target
+help:
+	@echo "Available targets:"
+	@echo "  build          - Build project for Arduino Mega"
+	@echo "  upload         - Upload to Arduino Mega"
+	@echo "  monitor        - Open serial monitor"
+	@echo "  test           - Run all tests"
+	@echo "  test-*         - Run specific component tests"
+	@echo "  test-full      - Run complete test suite"
+	@echo "  benchmark      - Run performance tests"
+	@echo "  clean          - Clean build artifacts"
+	@echo "  clean-all      - Clean everything including tests"
+	@echo "  lint           - Run static analysis"
+	@echo "  coverage       - Generate code coverage"
+	@echo "  memory-check   - Check memory usage"
+	@echo "  docs           - Generate documentation"
+	@echo "  help           - Show this help"
+
+.PHONY: test-integration test-all-components test-full benchmark coverage lint memory-check clean-all docs help
+
+# Targets para CI/CD
+ci-test: ## Ejecuta tests para CI/CD
+	@echo "$(GREEN)Ejecutando tests para CI/CD...$(NC)"
+	pio test -e native --json-output > test_results.json
+
+ci-build: ## Compilación para CI/CD
+	@echo "$(GREEN)Compilación para CI/CD...$(NC)"
+	pio run -e $(ENVIRONMENT) --json-output > build_results.json
+
+# Utilidades
+size: ## Muestra el uso de memoria
+	@echo "$(GREEN)Analizando uso de memoria...$(NC)"
+	pio run -e $(ENVIRONMENT) -t size
+
+list-targets: ## Lista todos los targets disponibles
+	@echo "$(GREEN)Targets disponibles:$(NC)"
+	pio run -t help
+
+device-list: ## Lista dispositivos conectados
+	@echo "$(GREEN)Dispositivos conectados:$(NC)"
+	pio device list
+
+# Configuración específica para diferentes placas
+mega: ## Configura para Arduino Mega
+	$(eval ENVIRONMENT := mega)
+	@echo "$(YELLOW)Configurado para Arduino Mega$(NC)"
+
+# Debugging
+debug-build: ## Compilación con símbolos de debug
+	@echo "$(GREEN)Compilación con debug...$(NC)"
+	pio run -e $(ENVIRONMENT) --debug
+
+serial-raw: ## Monitor serial sin formateo
+	pio device monitor --raw
+
+# Backup y restore
+backup: ## Crea backup del proyecto
+	@echo "$(GREEN)Creando backup...$(NC)"
+	tar -czf backup_$(shell date +%Y%m%d_%H%M%S).tar.gz src/ include/ test/ platformio.ini README.md
+
+# Quick commands
+q-build: dev-build ## Alias para compilación rápida
+q-upload: dev-upload ## Alias para subida rápida
+q-test: test ## Alias para testing rápido
+
+# Información del proyecto
+info: ## Muestra información del proyecto
+	@echo "$(GREEN)=== Información del Proyecto ===$(NC)"
+	@echo "$(YELLOW)Nombre:$(NC) Controlador MIDI"
+	@echo "$(YELLOW)Plataforma:$(NC) Arduino $(ENVIRONMENT)"
+	@echo "$(YELLOW)Framework:$(NC) Arduino"
+	@echo "$(YELLOW)Tests:$(NC) Google Test"
+	@echo ""
+	@echo "$(GREEN)=== Estructura del Proyecto ===$(NC)"
+	@tree -I '.pio|.git' -L 2 || ls -la
+
+# Default target
+all: clean build test ## Compilación completa y testing

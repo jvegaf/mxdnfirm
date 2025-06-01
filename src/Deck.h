@@ -5,11 +5,13 @@
 
 class DeckControl {
 public:
-  DeckControl(Muxer *m) : muxer(m) {}
+  DeckControl(Muxer *m) : muxer(m), isInitialized(false) {}
 
-  void begin();
+  bool begin();  // Return bool for error checking
   void read(void (*func)(uint8_t, uint8_t, uint8_t), uint8_t midiCh);
+  bool isReady() const { return isInitialized; }
 
 private:
   Muxer *muxer;
+  bool isInitialized;
 };
