@@ -1,0 +1,245 @@
+name: 🛠️ Issue & PR Automation
+
+on:
+  issues:
+    types: [opened, labeled, assigned]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  issue_comment:
+    types: [created]
+
+jobs:
+  # ================================================================================
+  # AUTO-LABEL ISSUES
+  # ================================================================================
+  auto-label:
+    name: 🏷️ Auto-label Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    
+    steps:
+    - name: 🏷️ Label Bug Reports
+      if: contains(github.event.issue.title, 'bug') || contains(github.event.issue.body, 'bug')
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['🐛 bug', 'needs-triage']
+          })
+
+    - name: 🏷️ Label Feature Requests
+      if: contains(github.event.issue.title, 'feature') || contains(github.event.issue.body, 'feature')
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['✨ enhancement', 'needs-triage']
+          })
+
+    - name: 🏷️ Label Hardware Issues
+      if: contains(github.event.issue.body, 'hardware') || contains(github.event.issue.body, 'Arduino') || contains(github.event.issue.body, 'circuit')
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['🔧 hardware', 'needs-review']
+          })
+
+    - name: 🏷️ Label MIDI Issues
+      if: contains(github.event.issue.body, 'MIDI') || contains(github.event.issue.body, 'midi')
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: ['🎵 MIDI', 'needs-review']
+          })
+
+  # ================================================================================
+  # PR CHECKS
+  # ================================================================================
+  pr-checks:
+    name: 🔍 PR Validation
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 📋 Validate PR Title
+      run: |
+        PR_TITLE="${{ github.event.pull_request.title }}"
+        echo "Validating PR title: $PR_TITLE"
+        
+        # Check if title follows conventional commits
+        if [[ "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+ ]]; then
+          echo "✅ PR title follows conventional commits format"
+        else
+          echo "⚠️ PR title should follow conventional commits format"
+          echo "Examples: feat: add new MIDI controller, fix: resolve encoder bug"
+        fi
+
+    - name: 📊 Check PR Size
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const pr = context.payload.pull_request;
+          const additions = pr.additions;
+          const deletions = pr.deletions;
+          const changes = additions + deletions;
+          
+          console.log(`PR changes: +${additions} -${deletions} (total: ${changes})`);
+          
+          let size_label = '';
+          if (changes < 10) {
+            size_label = 'size/XS';
+          } else if (changes < 30) {
+            size_label = 'size/S';
+          } else if (changes < 100) {
+            size_label = 'size/M';
+          } else if (changes < 500) {
+            size_label = 'size/L';
+          } else {
+            size_label = 'size/XL';
+          }
+          
+          // Add size label
+          await github.rest.issues.addLabels({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            labels: [size_label]
+          });
+          
+          // Comment if PR is too large
+          if (changes > 500) {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ This PR is quite large (>500 lines changed). Consider breaking it down into smaller PRs for easier review.'
+            });
+          }
+
+  # ================================================================================
+  # GREET NEW CONTRIBUTORS
+  # ================================================================================
+  greet-contributor:
+    name: 👋 Greet New Contributors
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    
+    steps:
+    - name: 👋 Welcome First-time Contributors
+      uses: actions/github-script@v6
+      with:
+        script: |
+          // Check if this is the user's first contribution
+          const { data: pullRequests } = await github.rest.pulls.list({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            creator: context.payload.pull_request.user.login,
+            state: 'all'
+          });
+          
+          if (pullRequests.length === 1) {
+            // This is their first PR
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `👋 Welcome to the Mixduino project, @${context.payload.pull_request.user.login}!
+              
+              Thank you for your first contribution! 🎉
+              
+              Here are a few things to keep in mind:
+              - Make sure your code follows our coding standards
+              - All tests should pass before merging
+              - Feel free to ask questions if you need help
+              
+              We appreciate your contribution to making Mixduino better! 🎛️`
+            });
+          }
+
+  # ================================================================================
+  # AUTO-ASSIGN REVIEWERS
+  # ================================================================================
+  assign-reviewers:
+    name: 👥 Auto-assign Reviewers
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    
+    steps:
+    - name: 🎯 Assign Reviewers Based on Files
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const pr = context.payload.pull_request;
+          
+          // Get changed files
+          const { data: files } = await github.rest.pulls.listFiles({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: pr.number
+          });
+          
+          let reviewers = [];
+          const changedFiles = files.map(f => f.filename);
+          
+          // Add logic based on changed files
+          if (changedFiles.some(f => f.includes('MIDI') || f.includes('midi'))) {
+            // MIDI-related changes - add MIDI expert reviewer
+            console.log('MIDI-related changes detected');
+          }
+          
+          if (changedFiles.some(f => f.includes('test/'))) {
+            // Test changes - add testing expert
+            console.log('Test-related changes detected');
+          }
+          
+          if (changedFiles.some(f => f.includes('hardware') || f.includes('.sch'))) {
+            // Hardware changes - add hardware expert
+            console.log('Hardware-related changes detected');
+          }
+          
+          console.log('Changed files:', changedFiles);
+
+  # ================================================================================
+  # STALE ISSUE MANAGEMENT
+  # ================================================================================
+  stale-issues:
+    name: 🕰️ Mark Stale Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - name: 🕰️ Mark Stale Issues and PRs
+      uses: actions/stale@v8
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        stale-issue-message: |
+          This issue has been automatically marked as stale because it has not had recent activity.
+          It will be closed if no further activity occurs within 7 days.
+          If this issue is still relevant, please add a comment to keep it open.
+        stale-pr-message: |
+          This pull request has been automatically marked as stale because it has not had recent activity.
+          It will be closed if no further activity occurs within 7 days.
+          If this PR is still relevant, please add a comment or push new commits to keep it open.
+        stale-issue-label: 'stale'
+        stale-pr-label: 'stale'
+        days-before-stale: 30
+        days-before-close: 7
+        exempt-issue-labels: 'pinned,security,good first issue'
+        exempt-pr-labels: 'pinned,security,work-in-progress'

@@ -1,0 +1,80 @@
+name: ✨ Feature Request
+description: Suggest an idea or enhancement for the Mixduino project
+title: "[FEATURE] "
+labels: ["✨ enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Help us understand what you'd like to see.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 🤔 Problem Description
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: I would like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 Alternatives Considered
+      description: Describe any alternative solutions or features you've considered
+      placeholder: Alternative approaches could be...
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 📂 Feature Category
+      description: What category does this feature belong to?
+      options:
+        - MIDI Functionality
+        - User Interface
+        - Hardware Integration
+        - Performance
+        - Documentation
+        - Developer Experience
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: ⭐ Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would be helpful
+        - High - Important for my use case
+        - Critical - Blocking my usage
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: 🛠️ Implementation
+      description: Are you willing to help implement this feature?
+      options:
+        - label: I can help with the implementation
+        - label: I can help with testing
+        - label: I can help with documentation
+        - label: I need help from maintainers
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Context
+      description: Add any other context, mockups, or screenshots about the feature request here.

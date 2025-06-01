@@ -1,0 +1,382 @@
+name: 🎛️ Mixduino CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_tests:
+        description: 'Run unit tests'
+        required: true
+        default: true
+        type: boolean
+      run_build:
+        description: 'Build firmware'
+        required: true
+        default: true
+        type: boolean
+      run_security_scan:
+        description: 'Run security scan'
+        required: true
+        default: true
+        type: boolean
+      run_docs:
+        description: 'Generate documentation'
+        required: true
+        default: false
+        type: boolean
+      target_environment:
+        description: 'Target environment'
+        required: true
+        default: 'mega'
+        type: choice
+        options:
+        - mega
+        - native
+        - both
+      test_filter:
+        description: 'Specific test to run (leave empty for all)'
+        required: false
+        type: string
+      release_version:
+        description: 'Create release with version (optional)'
+        required: false
+        type: string
+
+env:
+  # PlatformIO settings
+  PLATFORMIO_CORE_DIR: .platformio
+  PLATFORMIO_GLOBALLIB_DIR: .platformio/lib
+  PLATFORMIO_PACKAGES_DIR: .platformio/packages
+  PLATFORMIO_CACHE_DIR: .platformio/cache
+
+jobs:
+  # ================================================================================
+  # CODE QUALITY & LINTING
+  # ================================================================================
+  code-quality:
+    name: 🔍 Code Quality & Linting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+        pip install cpplint
+
+    - name: 🔧 Setup PlatformIO
+      run: pio system info
+
+    - name: 🧹 C++ Linting
+      run: |
+        # Run cpplint on source files
+        find src/ -name "*.cpp" -o -name "*.h" | xargs cpplint --filter=-legal/copyright,-build/include_subdir --linelength=100
+      continue-on-error: true
+
+    - name: 📊 Code Analysis
+      run: |
+        # Check for TODO/FIXME comments
+        echo "=== TODO/FIXME Analysis ==="
+        grep -r "TODO\|FIXME" src/ include/ || echo "No TODO/FIXME found"
+        
+        # Count lines of code
+        echo "=== Lines of Code ==="
+        find src/ include/ -name "*.cpp" -o -name "*.h" | xargs wc -l | tail -1
+
+  # ================================================================================
+  # UNIT TESTS
+  # ================================================================================
+  unit-tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    strategy:
+      matrix:
+        test-env: [
+          'brencoder',
+          'btnkit', 
+          'deck',
+          'mdcore',
+          'muxpots',
+          'npkit',
+          'potkit',
+          'integration'
+        ]
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: 📦 Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+
+    - name: 🏗️ Prepare Test Environment
+      run: |
+        python prepare_tests.py --test ${{ matrix.test-env }}
+
+    - name: 🧪 Run Unit Tests
+      run: |
+        pio test -e native --verbose
+
+    - name: 📊 Generate Test Report
+      if: always()
+      run: |
+        echo "=== Test Results for ${{ matrix.test-env }} ===" > test-results-${{ matrix.test-env }}.txt
+        echo "Test Environment: ${{ matrix.test-env }}" >> test-results-${{ matrix.test-env }}.txt
+        echo "Status: ${{ job.status }}" >> test-results-${{ matrix.test-env }}.txt
+        echo "Timestamp: $(date)" >> test-results-${{ matrix.test-env }}.txt
+
+    - name: 📤 Upload Test Results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.test-env }}
+        path: test-results-${{ matrix.test-env }}.txt
+
+  # ================================================================================
+  # BUILD FIRMWARE
+  # ================================================================================
+  build-firmware:
+    name: 🏗️ Build Firmware
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: 📦 Install PlatformIO
+      run: |
+        python -m pip install --upgrade pip
+        pip install platformio
+
+    - name: 🔧 Setup PlatformIO
+      run: pio system info
+
+    - name: 🏗️ Build for Arduino Mega
+      run: |
+        echo "Building firmware for Arduino Mega 2560..."
+        pio run -e mega --verbose
+
+    - name: 📊 Firmware Size Analysis
+      run: |
+        echo "=== Firmware Size Analysis ==="
+        pio run -e mega -t size
+        
+        # Check if firmware fits in memory
+        if [ -f ".pio/build/mega/firmware.hex" ]; then
+          SIZE=$(stat -c%s ".pio/build/mega/firmware.hex")
+          echo "Firmware size: $SIZE bytes"
+          if [ $SIZE -gt 262144 ]; then
+            echo "⚠️  Warning: Firmware size exceeds 256KB limit!"
+            exit 1
+          else
+            echo "✅ Firmware size OK"
+          fi
+        fi
+
+    - name: 📤 Upload Firmware Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: firmware-mega
+        path: |
+          .pio/build/mega/firmware.hex
+          .pio/build/mega/firmware.elf
+        retention-days: 30
+
+  # ================================================================================
+  # SECURITY SCAN
+  # ================================================================================
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔒 Run Semgrep Security Scan
+      uses: returntocorp/semgrep-action@v1
+      with:
+        config: >-
+          p/security-audit
+          p/cpp
+        generateSarif: "1"
+      continue-on-error: true
+
+    - name: 📤 Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: semgrep.sarif
+      if: always()
+
+  # ================================================================================
+  # DOCUMENTATION
+  # ================================================================================
+  documentation:
+    name: 📚 Generate Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔧 Install Doxygen
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y doxygen graphviz
+
+    - name: 📚 Generate Documentation
+      run: |
+        # Create Doxyfile if it doesn't exist
+        if [ ! -f "Doxyfile" ]; then
+          doxygen -g
+          # Configure basic settings
+          sed -i 's/PROJECT_NAME           = "My Project"/PROJECT_NAME           = "Mixduino Firmware"/' Doxyfile
+          sed -i 's/INPUT                  =/INPUT                  = src include/' Doxyfile
+          sed -i 's/RECURSIVE              = NO/RECURSIVE              = YES/' Doxyfile
+          sed -i 's/EXTRACT_ALL            = NO/EXTRACT_ALL            = YES/' Doxyfile
+          sed -i 's/GENERATE_LATEX         = YES/GENERATE_LATEX         = NO/' Doxyfile
+        fi
+        
+        doxygen Doxyfile
+
+    - name: 📤 Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./html
+
+  # ================================================================================
+  # RELEASE
+  # ================================================================================
+  release:
+    name: 🚀 Create Release
+    runs-on: ubuntu-latest
+    needs: [unit-tests, build-firmware, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for changelog
+
+    - name: 📥 Download Firmware Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: firmware-mega
+        path: ./firmware
+
+    - name: 🏷️ Generate Version Tag
+      id: version
+      run: |
+        # Generate version based on date and commit
+        VERSION="v$(date +'%Y.%m.%d')-$(git rev-parse --short HEAD)"
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Generated version: $VERSION"
+
+    - name: 📝 Generate Changelog
+      id: changelog
+      run: |
+        # Generate changelog from recent commits
+        CHANGELOG=$(git log --oneline --since="7 days ago" --pretty=format:"- %s (%h)" | head -20)
+        if [ -z "$CHANGELOG" ]; then
+          CHANGELOG="- Minor improvements and bug fixes"
+        fi
+        
+        # Save to file for release notes
+        cat > RELEASE_NOTES.md << EOF
+        # 🎛️ Mixduino Firmware ${{ steps.version.outputs.version }}
+        
+        ## 📋 Changes
+        $CHANGELOG
+        
+        ## 📦 Assets
+        - \`firmware.hex\` - Firmware for Arduino Mega 2560
+        - \`firmware.elf\` - ELF file for debugging
+        
+        ## 🔧 Installation
+        1. Download \`firmware.hex\`
+        2. Flash to Arduino Mega 2560 using Arduino IDE or PlatformIO
+        3. Enjoy your MIDI controller!
+        EOF
+
+    - name: 🚀 Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: 🎛️ Mixduino Firmware ${{ steps.version.outputs.version }}
+        body_path: RELEASE_NOTES.md
+        draft: false
+        prerelease: false
+
+    - name: 📤 Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./firmware/firmware.hex
+        asset_name: mixduino-firmware-${{ steps.version.outputs.version }}.hex
+        asset_content_type: application/octet-stream
+
+  # ================================================================================
+  # NOTIFICATIONS
+  # ================================================================================
+  notify:
+    name: 📢 Notifications
+    runs-on: ubuntu-latest
+    needs: [unit-tests, build-firmware, security-scan]
+    if: always()
+    
+    steps:
+    - name: 📊 Pipeline Summary
+      run: |
+        echo "=== 🎛️ Mixduino CI/CD Pipeline Summary ==="
+        echo "Repository: ${{ github.repository }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Commit: ${{ github.sha }}"
+        echo "Actor: ${{ github.actor }}"
+        echo "Event: ${{ github.event_name }}"
+        echo ""
+        echo "Job Status:"
+        echo "- Unit Tests: ${{ needs.unit-tests.result }}"
+        echo "- Build Firmware: ${{ needs.build-firmware.result }}"
+        echo "- Security Scan: ${{ needs.security-scan.result }}"
+        
+        if [ "${{ needs.unit-tests.result }}" = "success" ] && 
+           [ "${{ needs.build-firmware.result }}" = "success" ]; then
+          echo "🎉 Pipeline completed successfully!"
+        else
+          echo "❌ Pipeline failed - check logs for details"
+        fi

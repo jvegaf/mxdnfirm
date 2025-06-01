@@ -1,0 +1,94 @@
+name: 🔧 Hardware Issue
+description: Report hardware-related problems or questions
+title: "[HARDWARE] "
+labels: ["🔧 hardware", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report hardware-related issues, circuit problems, or component questions.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Issue Description
+      description: Describe the hardware issue you're experiencing
+      placeholder: Describe what's happening with your hardware...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 🔌 Hardware Component
+      description: Which hardware component is affected?
+      options:
+        - Arduino Mega 2560
+        - Multiplexers (4067)
+        - Encoders
+        - Potentiometers
+        - LEDs/NeoPixels
+        - Shift Registers
+        - Power Supply
+        - Connectors/Wiring
+        - PCB/Circuit Board
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: circuit
+    attributes:
+      label: 🔧 Circuit Details
+      description: Describe your circuit setup and connections
+      placeholder: |
+        - Components used: ...
+        - Connections: Pin X to Pin Y
+        - Power supply: ...
+        - Additional components: ...
+
+  - type: textarea
+    id: symptoms
+    attributes:
+      label: ⚠️ Symptoms
+      description: What symptoms are you observing?
+      placeholder: |
+        - LEDs not lighting up
+        - Encoders not responding
+        - Random behavior
+        - etc.
+
+  - type: textarea
+    id: measurements
+    attributes:
+      label: 📊 Measurements
+      description: Any voltage, current, or other measurements you've taken
+      placeholder: |
+        - Voltage at pin X: 3.3V
+        - Current draw: 150mA
+        - Resistance: 10kΩ
+
+  - type: textarea
+    id: photos
+    attributes:
+      label: 📸 Photos/Diagrams
+      description: Please attach photos of your setup or circuit diagrams if possible
+
+  - type: checkboxes
+    id: troubleshooting
+    attributes:
+      label: 🔍 Troubleshooting Done
+      description: What troubleshooting steps have you already tried?
+      options:
+        - label: Checked all connections
+        - label: Verified power supply
+        - label: Tested with multimeter
+        - label: Checked component datasheets
+        - label: Tried different components
+        - label: Consulted schematic
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: 📎 Additional Information
+      description: Any other relevant information about the hardware issue
