@@ -13,3 +13,6 @@ program:
 
 uploadfs:
 	platformio -f -c vim run --target uploadfs
+
+compiledb:
+	pio run -t compiledb
