@@ -85,7 +85,7 @@ jobs:
         echo "Validating PR title: $PR_TITLE"
         
         # Check if title follows conventional commits
-        if [[ "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+ ]]; then
+        if [[ "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?:\ .+ ]]; then
           echo "✅ PR title follows conventional commits format"
         else
           echo "⚠️ PR title should follow conventional commits format"
