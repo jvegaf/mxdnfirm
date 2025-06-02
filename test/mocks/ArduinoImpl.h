@@ -1,4 +1,8 @@
+#pragma once
 #include "Arduino.h"
+
+#ifdef TEST_ARDUINO_IMPLEMENTATION
+// Implementation for Arduino mock functions
 #include <chrono>
 #include <map>
 
@@ -99,118 +103,14 @@ void bitClear(uint8_t& value, uint8_t bit) {
 }
 
 void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
-    std::cout << "shiftOut(dataPin=" << (int)dataPin << ", clockPin=" << (int)clockPin 
-              << ", bitOrder=" << (int)bitOrder << ", val=" << (int)val << ")" << std::endl;
+    std::cout << "shiftOut(" << (int)dataPin << ", " << (int)clockPin << ", ";
+    std::cout << (bitOrder == MSBFIRST ? "MSBFIRST" : "LSBFIRST") << ", " << (int)val << ")" << std::endl;
 }
 
-// Adafruit_NeoPixel mock implementation
+// Adafruit_NeoPixel static members
 uint16_t Adafruit_NeoPixel::numLEDs = 0;
 uint8_t Adafruit_NeoPixel::pin = 0;
 uint32_t* Adafruit_NeoPixel::pixelData = nullptr;
-uint8_t Adafruit_NeoPixel::brightness = 255;
+uint8_t Adafruit_NeoPixel::brightness = 0;
 bool Adafruit_NeoPixel::isInitialized = false;
-
-Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) {
-    numLEDs = n;
-    pin = p;
-    if (pixelData) delete[] pixelData;
-    pixelData = new uint32_t[n]();
-    for (uint16_t i = 0; i < n; i++) {
-        pixelData[i] = 0;
-    }
-    isInitialized = false;
-}
-
-Adafruit_NeoPixel::~Adafruit_NeoPixel() {
-    delete[] pixelData;
-    pixelData = nullptr;
-}
-
-void Adafruit_NeoPixel::begin() {
-    isInitialized = true;
-}
-
-void Adafruit_NeoPixel::show() {
-    // Mock implementation - in real hardware this updates LEDs
-}
-
-void Adafruit_NeoPixel::clear() {
-    if (pixelData) {
-        for (uint16_t i = 0; i < numLEDs; i++) {
-            pixelData[i] = 0;
-        }
-    }
-}
-
-void Adafruit_NeoPixel::setBrightness(uint8_t b) {
-    brightness = b;
-}
-
-void Adafruit_NeoPixel::setPixelColor(uint16_t n, uint32_t c) {
-    if (n < numLEDs && pixelData) {
-        pixelData[n] = c;
-    }
-}
-
-void Adafruit_NeoPixel::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b) {
-    setPixelColor(n, Color(r, g, b));
-}
-
-uint32_t Adafruit_NeoPixel::getPixelColor(uint16_t n) {
-    if (n < numLEDs && pixelData) {
-        return pixelData[n];
-    }
-    return 0;
-}
-
-uint32_t Adafruit_NeoPixel::Color(uint8_t r, uint8_t g, uint8_t b) {
-    return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
-}
-
-uint32_t Adafruit_NeoPixel::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
-    return ((uint32_t)w << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
-}
-
-uint32_t Adafruit_NeoPixel::getPixelData(uint16_t index) {
-    if (index < numLEDs && pixelData) {
-        return pixelData[index];
-    }
-    return 0;
-}
-
-void Adafruit_NeoPixel::reset() {
-    if (pixelData) {
-        for (uint16_t i = 0; i < numLEDs; i++) {
-            pixelData[i] = 0;
-        }
-    }
-    brightness = 255;
-    isInitialized = false;
-}
-
-// MockArduino implementation
-void MockArduino::reset() {
-    digital_values.clear();
-    analog_values.clear();
-    mock_millis_offset = 0;
-    start_time = std::chrono::high_resolution_clock::now();
-    
-    // Reset NeoPixel mock
-    Adafruit_NeoPixel::reset();
-}
-
-void MockArduino::setDigitalValue(uint8_t pin, uint8_t value) {
-    digital_values[pin] = value;
-}
-
-void MockArduino::setAnalogValue(uint8_t pin, int value) {
-    analog_values[pin] = value;
-}
-
-void MockArduino::addMillis(unsigned long ms) {
-    mock_millis_offset += ms;
-}
-
-unsigned long MockArduino::getMillis() {
-    return millis();
-}
+#endif // TEST_ARDUINO_IMPLEMENTATION

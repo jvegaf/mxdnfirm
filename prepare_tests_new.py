@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 """
-Script to prepare test environments by copying necessary source files
+Script to prepare test environments by regenerating from the master sources
 """
 
 import os
 import shutil
 import argparse
+import subprocess
+
+def update_tests(test_name=None):
+    """Run platformio to rebuild tests with the latest changes"""
+    if test_name:
+        print(f"Running tests with filter: test_{test_name}")
+        subprocess.run(["pio", "test", "-e", "native", "-f", f"test_{test_name}"])
+    else:
+        print("Running all enabled tests")
+        subprocess.run(["pio", "test", "-e", "native"])
 
 def copy_source_files(test_name, source_files):
     """Copy source files and all mock files to a test directory"""
@@ -24,11 +34,12 @@ def copy_source_files(test_name, source_files):
         else:
             print(f"Warning: Source file {src_path} not found")
     
-    # Copy all mock files
+    # Copy only the needed mock files
+    # Avoid copying Arduino.cpp/h to prevent redefinition errors
     mock_dir = "test/mocks"
     if os.path.exists(mock_dir):
         for file in os.listdir(mock_dir):
-            if file.endswith('.cpp'):
+            if file.endswith('.cpp') and not file.startswith('Arduino'):
                 src_path = os.path.join(mock_dir, file)
                 shutil.copy2(src_path, test_dir)
                 print(f"Copied mock {src_path} to {test_dir}")
@@ -39,6 +50,7 @@ def main():
     parser = argparse.ArgumentParser(description='Prepare test environments')
     parser.add_argument('--all', action='store_true', help='Prepare all test environments')
     parser.add_argument('--test', help='Prepare specific test environment')
+    parser.add_argument('--update', action='store_true', help='Update and run tests')
     
     args = parser.parse_args()
     
@@ -54,6 +66,11 @@ def main():
         'npkit': ['NPKit', 'Led', 'leds'],
         'potkit': ['PotKit', 'Mux', 'Muxer']
     }
+    
+    if args.update:
+        # Run the tests directly
+        update_tests(args.test)
+        return
     
     if args.all:
         print("Preparing all test environments...")

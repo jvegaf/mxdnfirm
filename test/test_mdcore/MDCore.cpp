@@ -33,21 +33,23 @@ void setPadsColor(Location loc, uint8_t value) {
 }
 
 bool begin() {
-  try {
-    VUmeters::begin();
-    NPKit::begin();
-    Leds::begin();
-    changeDeck(deckBChannel);
-    setPadsColor(Location::Left, DEFAULT_PAD_BRIGHTNESS);
-    setPadsColor(Location::Right, DEFAULT_PAD_BRIGHTNESS);
-    
-    isInitialized = true;
-    return true;
-  } catch (...) {
+  // Las funciones begin de VUmeters y Leds devuelven void, no bool
+  VUmeters::begin();
+  
+  if (!NPKit::begin()) {
     isInitialized = false;
     lastError = 1; // Initialization error
     return false;
   }
+  
+  Leds::begin();
+  
+  changeDeck(deckBChannel);
+  setPadsColor(Location::Left, DEFAULT_PAD_BRIGHTNESS);
+  setPadsColor(Location::Right, DEFAULT_PAD_BRIGHTNESS);
+  
+  isInitialized = true;
+  return true;
 }
 
 void cChange(uint8_t channel, uint8_t number, uint8_t value) {

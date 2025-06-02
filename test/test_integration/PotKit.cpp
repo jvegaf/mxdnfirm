@@ -1,7 +1,8 @@
 #include "PotKit.h"
 
 PotKit::PotKit(const uint8_t *el, const uint8_t t_el)
-    : elements(el), t_elements(t_el), lastError(PotKitError::NONE), initialized(false) {
+    : elements(el), t_elements(t_el), lastError(PotKitError::NONE), initialized(false),
+      pTime(nullptr), timer(nullptr), potCState(nullptr), potPState(nullptr), lastCcValue(nullptr) {
   // Validate inputs
   if (el == nullptr) {
     lastError = PotKitError::INVALID_ELEMENTS;
@@ -14,14 +15,53 @@ PotKit::PotKit(const uint8_t *el, const uint8_t t_el)
   }
   
   // Allocate memory
-  try {
-    pTime = new uint32_t[t_el]();
-    timer = new uint32_t[t_el]();
-    potCState = new uint16_t[t_el]();
-    potPState = new uint16_t[t_el]();
-    lastCcValue = new uint8_t[t_el]();
-  } catch (...) {
+  pTime = new uint32_t[t_el]();
+  if (pTime == nullptr) {
     lastError = PotKitError::MEMORY_ALLOCATION;
+    return;
+  }
+  
+  timer = new uint32_t[t_el]();
+  if (timer == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    pTime = nullptr;
+    return;
+  }
+  
+  potCState = new uint16_t[t_el]();
+  if (potCState == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    delete[] timer;
+    pTime = nullptr;
+    timer = nullptr;
+    return;
+  }
+  
+  potPState = new uint16_t[t_el]();
+  if (potPState == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    delete[] timer;
+    delete[] potCState;
+    pTime = nullptr;
+    timer = nullptr;
+    potCState = nullptr;
+    return;
+  }
+  
+  lastCcValue = new uint8_t[t_el]();
+  if (lastCcValue == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    delete[] timer;
+    delete[] potCState;
+    delete[] potPState;
+    pTime = nullptr;
+    timer = nullptr;
+    potCState = nullptr;
+    potPState = nullptr;
     return;
   }
   

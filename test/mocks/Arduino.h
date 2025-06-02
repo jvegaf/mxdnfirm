@@ -13,6 +13,8 @@
 #define INPUT_PULLUP 0x2
 #define INPUT_PULLDOWN 0x3
 
+// Mock handler for common test utilities
+
 // Binary literals
 #define B00000000 0
 #define B00000001 1

@@ -162,8 +162,6 @@ TEST_F(BtnKitTest, ReadWithInvalidChannel) {
 }
 
 TEST_F(BtnKitTest, ButtonPressDetection) {
-    // Reset time at the beginning of the test
-    MockArduino::reset();
     btnKit = new BtnKit(testPins, 3);
     
     // Set initial states to HIGH (unpressed for pullup)
@@ -176,11 +174,6 @@ TEST_F(BtnKitTest, ButtonPressDetection) {
     
     // Press button 0 (set to LOW)
     MockArduino::setDigitalValue(2, LOW);
-    EXPECT_TRUE(btnKit->read(testCallback, 1));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
     EXPECT_TRUE(btnKit->read(testCallback, 1));
     
     // Avanzar el tiempo para superar el debounce
@@ -218,11 +211,6 @@ TEST_F(BtnKitTest, ButtonPressDetection) {
     // Release button 0 (set to HIGH)
     MockArduino::setDigitalValue(2, HIGH);
     EXPECT_TRUE(btnKit->read(testCallback, 1));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
-    EXPECT_TRUE(btnKit->read(testCallback, 1));
     
     // Avanzar el tiempo para superar el debounce
     MockArduino::addMillis(50);
@@ -256,8 +244,6 @@ TEST_F(BtnKitTest, ButtonPressDetection) {
 }
 
 TEST_F(BtnKitTest, DebounceFiltering) {
-    // Reset time at the beginning of the test
-    MockArduino::reset();
     btnKit = new BtnKit(testPins, 1);
     
     BtnKitConfig config;
@@ -271,16 +257,6 @@ TEST_F(BtnKitTest, DebounceFiltering) {
     
     // Press button
     MockArduino::setDigitalValue(2, LOW);
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
     EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
@@ -340,11 +316,6 @@ TEST_F(BtnKitTest, DebounceFiltering) {
     MockArduino::setDigitalValue(2, LOW);
     
     EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
     MockArduino::addMillis(150);
@@ -378,8 +349,6 @@ TEST_F(BtnKitTest, DebounceFiltering) {
 }
 
 TEST_F(BtnKitTest, InvertedLogicConfiguration) {
-    // Reset time at the beginning of the test
-    MockArduino::reset();
     btnKit = new BtnKit(testPins, 1);
     
     BtnKitConfig config;
@@ -393,11 +362,6 @@ TEST_F(BtnKitTest, InvertedLogicConfiguration) {
     
     // Press button (set to HIGH with inverted logic)
     MockArduino::setDigitalValue(2, HIGH);
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
     EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
@@ -450,8 +414,6 @@ TEST_F(BtnKitTest, ButtonStateQueries) {
 }
 
 TEST_F(BtnKitTest, JustPressedAndReleasedDetection) {
-    // Reset time at the beginning of the test
-    MockArduino::reset();
     btnKit = new BtnKit(testPins, 1);
     
     // Set initial state
@@ -465,16 +427,6 @@ TEST_F(BtnKitTest, JustPressedAndReleasedDetection) {
     
     // Press button
     MockArduino::setDigitalValue(2, LOW);
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
     EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
@@ -535,16 +487,6 @@ TEST_F(BtnKitTest, JustPressedAndReleasedDetection) {
     // Release button
     MockArduino::setDigitalValue(2, HIGH);
     EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
     MockArduino::addMillis(50);
@@ -600,8 +542,6 @@ TEST_F(BtnKitTest, JustPressedAndReleasedDetection) {
 TEST_F(BtnKitTest, GetLastPressTime) {
     // Reset time at the beginning of the test
     MockArduino::reset();
-    // Reset time at the beginning of the test
-    MockArduino::reset();
     btnKit = new BtnKit(testPins, 1);
     
     // Set initial state
@@ -614,11 +554,6 @@ TEST_F(BtnKitTest, GetLastPressTime) {
     // Wait and press button
     MockArduino::addMillis(100);
     MockArduino::setDigitalValue(2, LOW);
-    EXPECT_TRUE(btnKit->read(testCallback, 0));
-
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    // Leer de nuevo para que procese el cambio debounceado
     EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
