@@ -349,4 +349,13 @@ bool pulsePixel(uint8_t pos, uint32_t color, uint8_t intensity) {
   return setPixelColor(pos, r, g, b);
 }
 
+void cleanup() {
+  if (initialized) {
+    clear(); // Usamos clear() en lugar de clearPixels()
+    show();
+    initialized = false;
+  }
+  lastError = NPKitError::NONE;
+}
+
 } // namespace NPKit

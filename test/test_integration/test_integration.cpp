@@ -42,6 +42,9 @@ protected:
     }
     
     void TearDown() override {
+        // Asegurarse de que NPKit se limpie primero
+        NPKit::cleanup();
+        
         delete leftDeck;
         delete rightDeck;
         delete leftMuxer;
@@ -348,7 +351,8 @@ TEST_F(IntegrationTest, RealTimeOperationSimulation) {
 TEST_F(IntegrationTest, MemoryManagementIntegration) {
     // Test memory management across multiple component lifecycles
     for (int cycle = 0; cycle < 5; cycle++) {
-        // Create components        EXPECT_TRUE(MDCore::begin());
+        // Create components
+        EXPECT_TRUE(MDCore::begin());
         potKit = new PotKit(testPins, 3);
         btnKit = new BtnKit(btnPins, 3);
         
@@ -362,11 +366,13 @@ TEST_F(IntegrationTest, MemoryManagementIntegration) {
         MockArduino::setAnalogValue(A0, cycle * 200);
         EXPECT_TRUE(potKit->read(midiCallback, 0));
         
-        MockArduino::setDigitalValue(2, HIGH);        EXPECT_TRUE(btnKit->read(noteCallback, 0));
+        MockArduino::setDigitalValue(2, HIGH);
+        EXPECT_TRUE(btnKit->read(noteCallback, 0));
         
         EXPECT_TRUE(NPKit::handleChange(0, cycle % 6));
         
-        // Cleanup
+        // Cleanup explicitly
+        NPKit::cleanup();
         delete potKit;
         delete btnKit;
         potKit = nullptr;

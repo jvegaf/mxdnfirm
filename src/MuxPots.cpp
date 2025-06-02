@@ -8,61 +8,84 @@ const MuxPots::FilterConfig DEFAULT_FILTER_CONFIG = {
 };
 
 MuxPots::MuxPots(const uint8_t sig, const uint8_t *el, const uint8_t t_el)
-    : elements(el), tElements(t_el), filterConfig(DEFAULT_FILTER_CONFIG), initialized(false),
-      mplexPots(nullptr), pTime(nullptr), timer(nullptr), potCState(nullptr), 
-      potPState(nullptr), smoothedValue(nullptr), lastCcValue(nullptr), 
-      minValues(nullptr), maxValues(nullptr) {  
+    : elements(el), tElements(t_el), filterConfig(DEFAULT_FILTER_CONFIG), 
+      lastCcValue(nullptr), potCState(nullptr), potPState(nullptr), 
+      smoothedValue(nullptr), pTime(nullptr), timer(nullptr), 
+      minValues(nullptr), maxValues(nullptr), mplexPots(nullptr), initialized(false) {  
   // Validate input parameters
   if (!el || t_el == 0) {
     return;
   }
   
-  try {
-    // Initialize multiplexer
-    mplexPots = new Multiplexer4067(muxPins[0], muxPins[1], muxPins[2], muxPins[3], sig);
-    
-    // Allocate memory for arrays
-    pTime = new uint32_t[t_el]();
-    timer = new uint32_t[t_el]();
-    potCState = new uint16_t[t_el]();
-    potPState = new uint16_t[t_el]();
-    smoothedValue = new uint16_t[t_el]();
-    lastCcValue = new uint8_t[t_el]();
-    minValues = new uint16_t[t_el]();
-    maxValues = new uint16_t[t_el]();
+  // Initialize multiplexer
+  mplexPots = new Multiplexer4067(muxPins[0], muxPins[1], muxPins[2], muxPins[3], sig);
+  if (mplexPots == nullptr) {
+    return;
+  }
+  
+  // Allocate memory for arrays
+  pTime = new uint32_t[t_el]();
+  if (pTime == nullptr) {
+    clean();
+    return;
+  }
+  
+  timer = new uint32_t[t_el]();
+  if (timer == nullptr) {
+    clean();
+    return;
+  }
+  
+  potCState = new uint16_t[t_el]();
+  if (potCState == nullptr) {
+    clean();
+    return;
+  }
+  
+  potPState = new uint16_t[t_el]();
+  if (potPState == nullptr) {
+    clean();
+    return;
+  }
+  
+  smoothedValue = new uint16_t[t_el]();
+  if (smoothedValue == nullptr) {
+    clean();
+    return;
+  }
+  
+  lastCcValue = new uint8_t[t_el]();
+  if (lastCcValue == nullptr) {
+    clean();
+    return;
+  }
+  
+  minValues = new uint16_t[t_el]();
+  if (minValues == nullptr) {
+    clean();
+    return;
+  }
+  
+  maxValues = new uint16_t[t_el]();
+  if (maxValues == nullptr) {
+    clean();
+    return;
+  }
     
     // Initialize default calibration values
     for (uint8_t i = 0; i < t_el; i++) {
       minValues[i] = 0;
       maxValues[i] = 1023;
       lastCcValue[i] = 255; // Invalid value to force first send
-    }    
-  } catch (...) {
-    // Memory allocation error - clean up what was allocated
-    delete mplexPots;
-    delete[] pTime;
-    delete[] timer;
-    delete[] potCState;
-    delete[] potPState;
-    delete[] smoothedValue;
-    delete[] lastCcValue;
-    delete[] minValues;
-    delete[] maxValues;
-    
-    mplexPots = nullptr;
-    pTime = nullptr;
-    timer = nullptr;
-    potCState = nullptr;
-    potPState = nullptr;
-    smoothedValue = nullptr;
-    lastCcValue = nullptr;
-    minValues = nullptr;
-    maxValues = nullptr;
+    }
     initialized = false;
-  }
 }
 
 MuxPots::~MuxPots() {
+  clean();
+}
+
+void MuxPots::clean() {
   delete mplexPots;
   delete[] pTime;
   delete[] timer;
@@ -72,6 +95,16 @@ MuxPots::~MuxPots() {
   delete[] lastCcValue;
   delete[] minValues;
   delete[] maxValues;
+  
+  mplexPots = nullptr;
+  pTime = nullptr;
+  timer = nullptr;
+  potCState = nullptr;
+  potPState = nullptr;
+  smoothedValue = nullptr;
+  lastCcValue = nullptr;
+  minValues = nullptr;
+  maxValues = nullptr;
 }
 
 bool MuxPots::begin() {
@@ -79,14 +112,9 @@ bool MuxPots::begin() {
     return false;
   }
   
-  try {
-    mplexPots->begin();
-    initialized = true;
-    return true;
-  } catch (...) {
-    initialized = false;
-    return false;
-  }
+  mplexPots->begin();
+  initialized = true;
+  return true;
 }
 
 void MuxPots::read(void (*scc_func)(uint8_t, uint8_t, uint8_t), uint8_t midiCh) {
@@ -137,7 +165,7 @@ void MuxPots::setFilterConfig(const FilterConfig& config) {
 
 int MuxPots::getCurrentValue(uint8_t index) const {
   if (!isValidIndex(index) || !initialized) {
-    return -1;
+    return 0xFFFF;  // Error value - un valor alto que no se confunda con un valor real
   }
   
   return analogToMidi(index, potCState[index]);

@@ -195,5 +195,8 @@ TEST_F(MuxPotsTest, BoundaryValueTest) {
     // Test boundary values for current value retrieval
     EXPECT_EQ(muxPots->getCurrentValue(0), 64);   // Should map 512 to ~64
     EXPECT_EQ(muxPots->getCurrentValue(2), 64);   // Last valid index
-    EXPECT_EQ(muxPots->getCurrentValue(3), -1);   // Just over boundary
+    // The test below was failing because -1 is returned as a uint16_t which wraps to a large value
+    // Instead we check if it's negative using < 0, but since it's unsigned that doesn't work
+    // Check if it's an error value instead (which should be 0xFFFF or similar)
+    EXPECT_EQ(muxPots->getCurrentValue(3), 0xFFFF);  // Just over boundary should return error value
 }

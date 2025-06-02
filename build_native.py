@@ -1,8 +1,16 @@
 import os
-from SCons.Script import Import
-
-# Import the PlatformIO environment
-Import("env")
+try:
+    from SCons.Script import Import
+    # Import the PlatformIO environment
+    Import("env")
+except ImportError:
+    # Cuando se ejecuta flake8, definimos una variable env falsa para que no falle el linting
+    class DummyEnv:
+        def Append(self, **kwargs):
+            pass
+        def Object(self, source):
+            return source
+    env = DummyEnv()
 
 # Define the source directories we want to include
 src_dirs = [

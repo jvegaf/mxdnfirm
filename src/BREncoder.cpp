@@ -37,24 +37,26 @@ BREncoder::~BREncoder() {
 }
 
 bool BREncoder::begin() {
-  try {
-    leftEncoder = new Encoder(L_BROWSER_A, L_BROWSER_B);
-    rightEncoder = new Encoder(R_BROWSER_A, R_BROWSER_B);
-    
-    if (!leftEncoder || !rightEncoder) {
-      return false;
-    }
-      // Read initial positions
-    oldLeft = leftEncoder->read();
-    oldRight = rightEncoder->read();
-    
-    initialized = true;
-    return true;
-    
-  } catch (...) {
+  leftEncoder = new Encoder(L_BROWSER_A, L_BROWSER_B);
+  if (!leftEncoder) {
     initialized = false;
     return false;
   }
+  
+  rightEncoder = new Encoder(R_BROWSER_A, R_BROWSER_B);
+  if (!rightEncoder) {
+    delete leftEncoder;
+    leftEncoder = nullptr;
+    initialized = false;
+    return false;
+  }
+    
+  // Read initial positions
+  oldLeft = leftEncoder->read();
+  oldRight = rightEncoder->read();
+  
+  initialized = true;
+  return true;
 }
 
 void BREncoder::readEnc(void (*scc_func)(uint8_t, uint8_t, uint8_t)) {

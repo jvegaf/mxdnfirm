@@ -15,25 +15,53 @@ PotKit::PotKit(const uint8_t *el, const uint8_t t_el)
   }
   
   // Allocate memory
-  try {
-    pTime = new uint32_t[t_el]();
-    timer = new uint32_t[t_el]();
-    potCState = new uint16_t[t_el]();
-    potPState = new uint16_t[t_el]();
-    lastCcValue = new uint8_t[t_el]();
-  } catch (...) {
+  pTime = new uint32_t[t_el]();
+  if (pTime == nullptr) {
     lastError = PotKitError::MEMORY_ALLOCATION;
-    // Clean up partial allocations
+    return;
+  }
+  
+  timer = new uint32_t[t_el]();
+  if (timer == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    pTime = nullptr;
+    return;
+  }
+  
+  potCState = new uint16_t[t_el]();
+  if (potCState == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    delete[] timer;
+    pTime = nullptr;
+    timer = nullptr;
+    return;
+  }
+  
+  potPState = new uint16_t[t_el]();
+  if (potPState == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
+    delete[] pTime;
+    delete[] timer;
+    delete[] potCState;
+    pTime = nullptr;
+    timer = nullptr;
+    potCState = nullptr;
+    return;
+  }
+  
+  lastCcValue = new uint8_t[t_el]();
+  if (lastCcValue == nullptr) {
+    lastError = PotKitError::MEMORY_ALLOCATION;
     delete[] pTime;
     delete[] timer;
     delete[] potCState;
     delete[] potPState;
-    delete[] lastCcValue;
     pTime = nullptr;
     timer = nullptr;
     potCState = nullptr;
     potPState = nullptr;
-    lastCcValue = nullptr;
     return;
   }
   

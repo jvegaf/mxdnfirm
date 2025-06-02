@@ -45,7 +45,7 @@ public:  // Filtering and timing configuration
     /**
    * @brief Gets the current value of a specific potentiometer
    * @param index Potentiometer index
-   * @return MIDI value (0-127) or -1 if index is invalid
+   * @return MIDI value (0-127) or 0xFFFF if index is invalid
    */
   int getCurrentValue(uint8_t index) const;
     /**
@@ -84,6 +84,12 @@ private:
   
   Multiplexer4067 *mplexPots;
   bool initialized;
+  
+  /**
+   * @brief Clean up allocated resources
+   * Used to free memory when allocation fails or during destruction
+   */
+  void clean();
     /**
    * @brief Applies smoothing to a value
    * @param index Potentiometer index

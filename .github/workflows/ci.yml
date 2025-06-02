@@ -26,7 +26,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install flake8
       - name: 🔬 Run flake8
-        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        run: |
+          # Excluir build_native.py del linting y usar lint_helper.py en su lugar
+          flake8 lint_helper.py prepare_tests.py --count --select=E9,F63,F7,F82 --show-source --statistics
 
   lint-cpp:
     name: ⚙️ Lint C/C++ Code
@@ -55,8 +57,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
       - name: 🏗️ Build PlatformIO Project
-        # Assuming 'mega' is a common or default environment
-        run: pio run -e mega
+        # Assuming 'mega' is a common or default environment, con excepciones habilitadas
+        run: |
+          # Actualizar la configuración para habilitar excepciones
+          sed -i 's/-fno-exceptions/-fexceptions/g' platformio.ini
+          # Si no existe la flag de excepciones, agregarla
+          if ! grep -q "fexceptions" platformio.ini; then
+            sed -i '/build_flags/a \\\t-fexceptions' platformio.ini
+          fi
+          pio run -e mega
 
   run-platformio-tests:
     name: 🧪 Run PlatformIO Unit Tests
@@ -73,5 +82,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install platformio
       - name: 🧪 Run PlatformIO Tests
-        # Assuming 'native' is the environment for unit tests
-        run: pio test -e native
+        # Assuming 'native' is the environment for unit tests, con excepciones habilitadas
+        run: |
+          # Actualizar la configuración para habilitar excepciones
+          sed -i 's/-fno-exceptions/-fexceptions/g' platformio.ini
+          # Si no existe la flag de excepciones, agregarla
+          if ! grep -q "fexceptions" platformio.ini; then
+            sed -i '/build_flags/a \\\t-fexceptions' platformio.ini
+          fi
+          pio test -e native

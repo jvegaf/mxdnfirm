@@ -2,8 +2,8 @@
 #include <stdint.h>
 
 BtnKit::BtnKit(const uint8_t *elem, const uint8_t t_elem)
-    : elements(elem), t_elements(t_elem), lastError(BtnKitError::NONE), initialized(false),
-      pState(nullptr), cState(nullptr), lastDebounceTime(nullptr) {
+    : elements(elem), t_elements(t_elem), pState(nullptr), cState(nullptr), 
+      lastDebounceTime(nullptr), lastError(BtnKitError::NONE), initialized(false) {
   
   // Validate inputs
   if (elem == nullptr) {
@@ -17,19 +17,27 @@ BtnKit::BtnKit(const uint8_t *elem, const uint8_t t_elem)
   }
   
   // Allocate memory
-  try {
-    pState = new uint16_t[t_elem]();
-    cState = new uint16_t[t_elem]();
-    lastDebounceTime = new uint32_t[t_elem]();
-  } catch (...) {
+  pState = new uint16_t[t_elem]();
+  if (pState == nullptr) {
     lastError = BtnKitError::MEMORY_ALLOCATION;
-    // Clean up partial allocations
+    return;
+  }
+  
+  cState = new uint16_t[t_elem]();
+  if (cState == nullptr) {
+    lastError = BtnKitError::MEMORY_ALLOCATION;
+    delete[] pState;
+    pState = nullptr;
+    return;
+  }
+  
+  lastDebounceTime = new uint32_t[t_elem]();
+  if (lastDebounceTime == nullptr) {
+    lastError = BtnKitError::MEMORY_ALLOCATION;
     delete[] pState;
     delete[] cState;
-    delete[] lastDebounceTime;
     pState = nullptr;
     cState = nullptr;
-    lastDebounceTime = nullptr;
     return;
   }
   
@@ -74,8 +82,7 @@ bool BtnKit::setConfig(const BtnKitConfig& newConfig) {
   }
   
   if (newConfig.inputMode != INPUT && 
-      newConfig.inputMode != INPUT_PULLUP && 
-      newConfig.inputMode != INPUT_PULLDOWN) {
+      newConfig.inputMode != INPUT_PULLUP) {
     lastError = BtnKitError::INVALID_ELEMENTS;
     return false;
   }

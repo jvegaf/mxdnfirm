@@ -40,6 +40,9 @@ namespace NPKit {
   bool setConfig(const NPKitConfig& config);
   NPKitConfig getConfig();
   
+  // Cleanup resources
+  void cleanup();
+  
   // Status methods
   bool isReady();
   NPKitError getLastError();
