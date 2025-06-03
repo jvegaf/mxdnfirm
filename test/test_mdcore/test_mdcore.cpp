@@ -14,12 +14,18 @@
 class MDCoreTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Reset MIDI mock state - use direct reset since no singleton
+        // Reset all mock states
         MockMIDI::reset();
+        Adafruit_NeoPixel::reset();
+        
+        // Clear any leftover state from NPKit
+        NPKit::clearError();
     }
     
     void TearDown() override {
-        // No cleanup needed for namespace functions
+        // Clean up after test
+        NPKit::clearError();
+        Adafruit_NeoPixel::reset();
     }
 };
 

@@ -8,10 +8,15 @@ protected:
         // Reset mock state
         MockArduino::reset();
         Adafruit_NeoPixel::reset();
+        
+        // Clean up NPKit state from previous tests
+        NPKit::cleanup();
+        NPKit::clearError();
     }
     
     void TearDown() override {
-        // Clean up
+        // Clean up after test
+        NPKit::cleanup();
     }
 };
 

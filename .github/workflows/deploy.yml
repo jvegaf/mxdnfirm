@@ -79,7 +79,6 @@ jobs:
     if: github.event_name == 'release' || github.event.inputs.environment == 'production'
     environment: production
     needs: deploy-staging
-    
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4

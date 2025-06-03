@@ -43,12 +43,17 @@ bool begin(const NPKitConfig& config) {
   currentConfig = config;
   
   try {
+    // Initialize NeoPixel safely
     np.setBrightness(currentConfig.brightness);
     np.begin();
-    np.clear();
     
-    if (currentConfig.autoShow) {
-      np.show();
+    // Only clear if begin was successful
+    if (np.getInitialized()) {
+      np.clear();
+      
+      if (currentConfig.autoShow) {
+        np.show();
+      }
     }
     
     initialized = true;

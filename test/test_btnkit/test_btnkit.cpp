@@ -174,31 +174,12 @@ TEST_F(BtnKitTest, ButtonPressDetection) {
     
     // Press button 0 (set to LOW)
     MockArduino::setDigitalValue(2, LOW);
+    
+    // Advance time to allow debounce processing
+    MockArduino::addMillis(25); // More than debounce delay (20ms)
+    
+    // Now read to process the button press
     EXPECT_TRUE(btnKit->read(testCallback, 1));
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
     
     // Should trigger note on
     EXPECT_EQ(callbackCount, 1);
@@ -210,12 +191,14 @@ TEST_F(BtnKitTest, ButtonPressDetection) {
     
     // Release button 0 (set to HIGH)
     MockArduino::setDigitalValue(2, HIGH);
+    
+    // Advance time to allow debounce processing
+    MockArduino::addMillis(25); // More than debounce delay (20ms)
+    
+    // Now read to process the button release
     EXPECT_TRUE(btnKit->read(testCallback, 1));
     
     // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    
-    // Avanzar el tiempo para superar el debounce
     MockArduino::addMillis(20);
     
     // Avanzar el tiempo para superar el debounce
@@ -228,14 +211,7 @@ TEST_F(BtnKitTest, ButtonPressDetection) {
     MockArduino::addMillis(20);
     
     // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
+    MockArduino::addMillis(20);    
     // Should trigger note off
     EXPECT_EQ(callbackCount, 1);
     EXPECT_EQ(lastNote, 0);
@@ -257,18 +233,19 @@ TEST_F(BtnKitTest, DebounceFiltering) {
     
     // Press button
     MockArduino::setDigitalValue(2, LOW);
+    
+    // Advance time by less than debounce delay
+    MockArduino::addMillis(50);
+    EXPECT_TRUE(btnKit->read(testCallback, 0));
+    
+    // Should not trigger callback yet (still bouncing)
+    EXPECT_EQ(callbackCount, 0);
+    
+    // Advance time to exceed debounce delay
+    MockArduino::addMillis(60); // Total 110ms > 100ms debounce
     EXPECT_TRUE(btnKit->read(testCallback, 0));
     
     // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(50);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(150);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
     MockArduino::addMillis(101);
     
     // Avanzar el tiempo para superar el debounce
@@ -280,72 +257,27 @@ TEST_F(BtnKitTest, DebounceFiltering) {
     // Avanzar el tiempo para superar el debounce
     MockArduino::addMillis(20);
     
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(20);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
+    // Avanzar el tiempo para superar el debounce    
+    // Now should trigger callback after debounce period
     EXPECT_EQ(callbackCount, 1);
+    EXPECT_EQ(lastNote, 0);
+    EXPECT_EQ(lastVelocity, 127);
     
     resetCallback();
     
     // Quick release and press (should be filtered)
     MockArduino::setDigitalValue(2, HIGH);
-    MockArduino::addMillis(10); // Only 10ms
+    MockArduino::addMillis(10); // Only 10ms - less than debounce
     MockArduino::setDigitalValue(2, LOW);
     
     EXPECT_TRUE(btnKit->read(testCallback, 0));
+    EXPECT_EQ(callbackCount, 0); // Should be filtered due to debounce
     
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(150);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    
-    // Avanzar el tiempo para superar el debounce
-    MockArduino::addMillis(101);
-    EXPECT_EQ(callbackCount, 0); // Should be filtered
-    
-    // Wait for debounce period
-    MockArduino::addMillis(150);
+    // Wait for full debounce period and read again
+    MockArduino::addMillis(101); // Now exceed debounce delay
     EXPECT_TRUE(btnKit->read(testCallback, 0));
-    EXPECT_GT(callbackCount, 0); // Should now register
+    EXPECT_EQ(callbackCount, 1); // Should now register the press
+}
 }
 
 TEST_F(BtnKitTest, InvertedLogicConfiguration) {

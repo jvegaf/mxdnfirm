@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include <chrono>
 #include <map>
+#include <new>
 
 static auto start_time = std::chrono::high_resolution_clock::now();
 static unsigned long mock_millis_offset = 0;
@@ -111,23 +112,37 @@ uint8_t Adafruit_NeoPixel::brightness = 255;
 bool Adafruit_NeoPixel::isInitialized = false;
 
 Adafruit_NeoPixel::Adafruit_NeoPixel(uint16_t n, uint8_t p, uint8_t t) {
+    // Ensure safe initialization with proper null checks
+    if (pixelData != nullptr && numLEDs != n) {
+        delete[] pixelData;
+        pixelData = nullptr;
+    }
+    
     numLEDs = n;
     pin = p;
-    if (pixelData) delete[] pixelData;
-    pixelData = new uint32_t[n]();
-    for (uint16_t i = 0; i < n; i++) {
-        pixelData[i] = 0;
+    
+    if (n > 0 && pixelData == nullptr) {
+        pixelData = new(std::nothrow) uint32_t[n];
+        if (pixelData != nullptr) {
+            // Initialize all pixels to 0
+            for (uint16_t i = 0; i < n; i++) {
+                pixelData[i] = 0;
+            }
+        }
     }
     isInitialized = false;
 }
 
 Adafruit_NeoPixel::~Adafruit_NeoPixel() {
-    delete[] pixelData;
-    pixelData = nullptr;
+    // Note: We don't delete pixelData here since it's static
+    // It will be cleaned up in reset() or at program end
 }
 
 void Adafruit_NeoPixel::begin() {
-    isInitialized = true;
+    // Only mark as initialized if we have valid pixel data or zero pixels
+    if (numLEDs == 0 || pixelData != nullptr) {
+        isInitialized = true;
+    }
 }
 
 void Adafruit_NeoPixel::show() {
@@ -135,7 +150,7 @@ void Adafruit_NeoPixel::show() {
 }
 
 void Adafruit_NeoPixel::clear() {
-    if (pixelData) {
+    if (pixelData != nullptr && numLEDs > 0) {
         for (uint16_t i = 0; i < numLEDs; i++) {
             pixelData[i] = 0;
         }
@@ -147,7 +162,7 @@ void Adafruit_NeoPixel::setBrightness(uint8_t b) {
 }
 
 void Adafruit_NeoPixel::setPixelColor(uint16_t n, uint32_t c) {
-    if (n < numLEDs && pixelData) {
+    if (n < numLEDs && pixelData != nullptr) {
         pixelData[n] = c;
     }
 }
@@ -157,7 +172,7 @@ void Adafruit_NeoPixel::setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t 
 }
 
 uint32_t Adafruit_NeoPixel::getPixelColor(uint16_t n) {
-    if (n < numLEDs && pixelData) {
+    if (n < numLEDs && pixelData != nullptr) {
         return pixelData[n];
     }
     return 0;
@@ -172,7 +187,7 @@ uint32_t Adafruit_NeoPixel::Color(uint8_t r, uint8_t g, uint8_t b, uint8_t w) {
 }
 
 uint32_t Adafruit_NeoPixel::getPixelData(uint16_t index) {
-    if (index < numLEDs && pixelData) {
+    if (index < numLEDs && pixelData != nullptr) {
         return pixelData[index];
     }
     return 0;
@@ -180,10 +195,11 @@ uint32_t Adafruit_NeoPixel::getPixelData(uint16_t index) {
 
 void Adafruit_NeoPixel::reset() {
     if (pixelData) {
-        for (uint16_t i = 0; i < numLEDs; i++) {
-            pixelData[i] = 0;
-        }
+        delete[] pixelData;
+        pixelData = nullptr;
     }
+    numLEDs = 0;
+    pin = 0;
     brightness = 255;
     isInitialized = false;
 }
