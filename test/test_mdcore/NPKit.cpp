@@ -1,5 +1,6 @@
 #include "NPKit.h"
 #include <stdint.h>
+#include <cstdio>
 
 namespace NPKit {
 
@@ -129,21 +130,28 @@ bool show() {
 }
 
 bool handleChange(uint8_t pos, uint8_t val) {
+  printf("DEBUG: handleChange called with pos=%d, val=%d\n", pos, val);
+  printf("DEBUG: initialized=%d, tPixels=%d, NUM_COLORS=%d\n", initialized, tPixels, NUM_COLORS);
+  
   if (!initialized) {
+    printf("DEBUG: Not initialized error\n");
     lastError = NPKitError::NOT_INITIALIZED;
     return false;
   }
   
   if (!isValidPosition(pos)) {
+    printf("DEBUG: Invalid position error - pos=%d >= tPixels=%d\n", pos, tPixels);
     lastError = NPKitError::INVALID_POSITION;
     return false;
   }
   
   if (val >= NUM_COLORS) {
+    printf("DEBUG: Invalid value error - val=%d >= NUM_COLORS=%d\n", val, NUM_COLORS);
     lastError = NPKitError::INVALID_VALUE;
     return false;
   }
   
+  printf("DEBUG: About to call setPixelColor with Colors[%d]\n", val);
   return setPixelColor(pos, Colors[val]);
 }
 
