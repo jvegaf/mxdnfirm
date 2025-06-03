@@ -4,33 +4,32 @@
 
 namespace NPKit {
 
-// Internal state
-static Adafruit_NeoPixel np(tPixels, NP_DATA, NEO_GRB + NEO_KHZ800);
+// Mock internal state
 static NPKitConfig currentConfig;
 static NPKitError lastError = NPKitError::NONE;
 static bool initialized = false;
+static uint32_t mockPixels[tPixels];
 
-// Color constants
-const uint32_t CLEAR_COL = Adafruit_NeoPixel::Color(0, 0, 0);
-const uint32_t BLUE_COL = Adafruit_NeoPixel::Color(0, 0, 255);
-const uint32_t GREEN_COL = Adafruit_NeoPixel::Color(0, 255, 0);
-const uint32_t RED_COL = Adafruit_NeoPixel::Color(255, 0, 0);
-const uint32_t YELLOW_COL = Adafruit_NeoPixel::Color(255, 230, 0);
-const uint32_t ORANGE_COL = Adafruit_NeoPixel::Color(255, 143, 0);
-const uint32_t PURPLE_COL = Adafruit_NeoPixel::Color(243, 0, 255);
-const uint32_t GRAY_COL = Adafruit_NeoPixel::Color(191, 201, 202);
+// Mock color constants (simple RGB encoding)
+const uint32_t CLEAR_COL = 0x000000;
+const uint32_t BLUE_COL = 0x0000FF;
+const uint32_t GREEN_COL = 0x00FF00;
+const uint32_t RED_COL = 0xFF0000;
+const uint32_t YELLOW_COL = 0xFFE600;
+const uint32_t ORANGE_COL = 0xFF8F00;
+const uint32_t PURPLE_COL = 0xF300FF;
+const uint32_t GRAY_COL = 0xBFC9CA;
 
-// Color mapping for different cue types
-// Range: -1 to 5 (-1 = no hotcue, 0 = Cue, 1 = FadeIn, 2 = FadeOut, 3 = Load, 4 = Grid, 5 = Loop)
+// Simple color mapping
 static const uint32_t Colors[] = {
-  CLEAR_COL,  // 0: no hotcue
-  BLUE_COL,   // 1: cue
-  ORANGE_COL, // 2: fade out
-  YELLOW_COL, // 3: load
-  GRAY_COL,   // 4: grid
-  GREEN_COL,  // 5: loop
-  RED_COL,    // 6: additional
-  PURPLE_COL  // 7: additional
+  CLEAR_COL,  // 0
+  BLUE_COL,   // 1
+  ORANGE_COL, // 2
+  YELLOW_COL, // 3
+  GRAY_COL,   // 4
+  GREEN_COL,  // 5
+  RED_COL,    // 6
+  PURPLE_COL  // 7
 };
 
 static const uint8_t NUM_COLORS = sizeof(Colors) / sizeof(Colors[0]);
@@ -43,53 +42,13 @@ bool begin(const NPKitConfig& config) {
   lastError = NPKitError::NONE;
   currentConfig = config;
   
-  try {
-    np.setBrightness(currentConfig.brightness);
-    np.begin();
-    np.clear();
-    
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    
-    initialized = true;
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    initialized = false;
-    return false;
-  }
-}
-
-bool setConfig(const NPKitConfig& config) {
-  if (config.brightness > 255) {
-    lastError = NPKitError::INVALID_VALUE;
-    return false;
+  // Mock initialization
+  for (uint8_t i = 0; i < tPixels; i++) {
+    mockPixels[i] = 0;
   }
   
-  currentConfig = config;
-  
-  if (initialized) {
-    np.setBrightness(currentConfig.brightness);
-  }
-  
+  initialized = true;
   return true;
-}
-
-NPKitConfig getConfig() {
-  return currentConfig;
-}
-
-bool isReady() {
-  return initialized;
-}
-
-NPKitError getLastError() {
-  return lastError;
-}
-
-void clearError() {
-  lastError = NPKitError::NONE;
 }
 
 bool isValidPosition(uint8_t pos) {
@@ -102,16 +61,10 @@ bool clear() {
     return false;
   }
   
-  try {
-    np.clear();
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
+  for (uint8_t i = 0; i < tPixels; i++) {
+    mockPixels[i] = 0;
   }
+  return true;
 }
 
 bool show() {
@@ -119,14 +72,8 @@ bool show() {
     lastError = NPKitError::NOT_INITIALIZED;
     return false;
   }
-  
-  try {
-    np.show();
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
-  }
+  // Mock show - just return success
+  return true;
 }
 
 bool handleChange(uint8_t pos, uint8_t val) {
@@ -151,15 +98,12 @@ bool handleChange(uint8_t pos, uint8_t val) {
     return false;
   }
   
-  printf("DEBUG: About to call setPixelColor with Colors[%d]\n", val);
-  return setPixelColor(pos, Colors[val]);
+  printf("DEBUG: About to set pixel %d to color 0x%06X\n", pos, Colors[val]);
+  mockPixels[pos] = Colors[val];
+  return true;
 }
 
 bool handleColorChange(uint8_t pos, uint32_t color) {
-  return setPixelColor(pos, color);
-}
-
-bool setPixelColor(uint8_t pos, uint32_t color) {
   if (!initialized) {
     lastError = NPKitError::NOT_INITIALIZED;
     return false;
@@ -170,28 +114,36 @@ bool setPixelColor(uint8_t pos, uint32_t color) {
     return false;
   }
   
-  try {
-    np.setPixelColor(pos, color);
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
-  }
+  mockPixels[pos] = color;
+  return true;
+}
+
+bool setPixelColor(uint8_t pos, uint32_t color) {
+  return handleColorChange(pos, color);
 }
 
 bool setPixelColor(uint8_t pos, uint8_t r, uint8_t g, uint8_t b) {
-  return setPixelColor(pos, Adafruit_NeoPixel::Color(r, g, b));
+  uint32_t color = ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+  return setPixelColor(pos, color);
 }
 
 uint32_t getPixelColor(uint8_t pos) {
-  if (!initialized || !isValidPosition(pos)) {
+  if (!isValidPosition(pos)) {
     return 0;
   }
-  
-  return np.getPixelColor(pos);
+  return mockPixels[pos];
+}
+
+NPKitError getLastError() {
+  return lastError;
+}
+
+bool isInitialized() {
+  return initialized;
+}
+
+uint8_t getPixelCount() {
+  return tPixels;
 }
 
 bool setBrightness(uint8_t brightness) {
@@ -199,31 +151,29 @@ bool setBrightness(uint8_t brightness) {
     lastError = NPKitError::NOT_INITIALIZED;
     return false;
   }
-  
   currentConfig.brightness = brightness;
-  
-  try {
-    np.setBrightness(brightness);
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
-  }
+  return true;
 }
 
 uint8_t getBrightness() {
   return currentConfig.brightness;
 }
 
-uint8_t getPixelCount() {
-  return tPixels;
+bool setConfig(const NPKitConfig& config) {
+  currentConfig = config;
+  return true;
+}
+
+NPKitConfig getConfig() {
+  return currentConfig;
 }
 
 uint32_t colorFromRGB(uint8_t r, uint8_t g, uint8_t b) {
-  return Adafruit_NeoPixel::Color(r, g, b);
+  return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+}
+
+bool setPixelColorFromRGB(uint8_t pos, uint8_t r, uint8_t g, uint8_t b) {
+  return setPixelColor(pos, r, g, b);
 }
 
 bool setAllPixels(uint32_t color) {
@@ -232,44 +182,30 @@ bool setAllPixels(uint32_t color) {
     return false;
   }
   
-  try {
-    for (uint8_t i = 0; i < tPixels; i++) {
-      np.setPixelColor(i, color);
-    }
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
+  for (uint8_t i = 0; i < tPixels; i++) {
+    mockPixels[i] = color;
   }
+  return true;
 }
 
-bool fadePixel(uint8_t pos, uint8_t steps) {
-  if (!initialized) {
-    lastError = NPKitError::NOT_INITIALIZED;
-    return false;
-  }
-  
+bool fadePixel(uint8_t pos, uint8_t fadeAmount) {
+  // Mock implementation - just reduce brightness
   if (!isValidPosition(pos)) {
     lastError = NPKitError::INVALID_POSITION;
     return false;
   }
   
-  uint32_t currentColor = np.getPixelColor(pos);
+  uint32_t color = mockPixels[pos];
+  uint8_t r = (color >> 16) & 0xFF;
+  uint8_t g = (color >> 8) & 0xFF;
+  uint8_t b = color & 0xFF;
   
-  // Extract RGB components
-  uint8_t r = (currentColor >> 16) & 0xFF;
-  uint8_t g = (currentColor >> 8) & 0xFF;
-  uint8_t b = currentColor & 0xFF;
+  r = (r > fadeAmount) ? r - fadeAmount : 0;
+  g = (g > fadeAmount) ? g - fadeAmount : 0;
+  b = (b > fadeAmount) ? b - fadeAmount : 0;
   
-  // Fade by reducing each component
-  r = (r > steps) ? r - steps : 0;
-  g = (g > steps) ? g - steps : 0;
-  b = (b > steps) ? b - steps : 0;
-  
-  return setPixelColor(pos, r, g, b);
+  mockPixels[pos] = ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+  return true;
 }
 
 bool setRainbow() {
@@ -278,40 +214,11 @@ bool setRainbow() {
     return false;
   }
   
-  try {
-    for (uint8_t i = 0; i < tPixels; i++) {
-      // Create rainbow effect
-      uint8_t hue = (255 * i) / tPixels;
-      // Simple HSV to RGB conversion for rainbow
-      uint8_t r, g, b;
-      
-      if (hue < 85) {
-        r = hue * 3;
-        g = 255 - hue * 3;
-        b = 0;
-      } else if (hue < 170) {
-        hue -= 85;
-        r = 255 - hue * 3;
-        g = 0;
-        b = hue * 3;
-      } else {
-        hue -= 170;
-        r = 0;
-        g = hue * 3;
-        b = 255 - hue * 3;
-      }
-      
-      np.setPixelColor(i, Adafruit_NeoPixel::Color(r, g, b));
-    }
-    
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
+  // Mock rainbow - just set different colors
+  for (uint8_t i = 0; i < tPixels; i++) {
+    mockPixels[i] = Colors[i % NUM_COLORS];
   }
+  return true;
 }
 
 bool setTestPattern() {
@@ -320,51 +227,15 @@ bool setTestPattern() {
     return false;
   }
   
-  try {
-    const uint32_t testColors[] = {RED_COL, GREEN_COL, BLUE_COL, YELLOW_COL};
-    const uint8_t numTestColors = sizeof(testColors) / sizeof(testColors[0]);
-    
-    for (uint8_t i = 0; i < tPixels; i++) {
-      np.setPixelColor(i, testColors[i % numTestColors]);
-    }
-    
-    if (currentConfig.autoShow) {
-      np.show();
-    }
-    return true;
-  } catch (...) {
-    lastError = NPKitError::HARDWARE_ERROR;
-    return false;
+  // Mock test pattern
+  for (uint8_t i = 0; i < tPixels; i++) {
+    mockPixels[i] = (i % 2) ? RED_COL : BLUE_COL;
   }
+  return true;
 }
 
-bool pulsePixel(uint8_t pos, uint32_t color, uint8_t intensity) {
-  if (!initialized) {
-    lastError = NPKitError::NOT_INITIALIZED;
-    return false;
-  }
-  
-  if (!isValidPosition(pos)) {
-    lastError = NPKitError::INVALID_POSITION;
-    return false;
-  }
-  
-  // Extract RGB components
-  uint8_t r = ((color >> 16) & 0xFF) * intensity / 255;
-  uint8_t g = ((color >> 8) & 0xFF) * intensity / 255;
-  uint8_t b = (color & 0xFF) * intensity / 255;
-  
-  return setPixelColor(pos, r, g, b);
-}
-
-// Añadimos la función cleanup
-void cleanup() {
-  if (initialized) {
-    clear(); // Usamos clear() en lugar de clearPixels()
-    show();
-    initialized = false;
-  }
-  lastError = NPKitError::NONE;
+bool setColorFromValue(uint8_t pos, uint8_t value) {
+  return handleChange(pos, value);
 }
 
 } // namespace NPKit

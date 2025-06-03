@@ -1,5 +1,10 @@
 #include "BtnKit.h"
 #include <stdint.h>
+#include <cstdio>
+
+// Define static members
+bool BtnKit::justPressedArray[64] = {false};
+bool BtnKit::justReleasedArray[64] = {false};
 
 BtnKit::BtnKit(const uint8_t *elem, const uint8_t t_elem)
     : elements(elem), t_elements(t_elem), pState(nullptr), cState(nullptr), 
@@ -60,6 +65,8 @@ bool BtnKit::begin() {
     return false;
   }
   
+  uint32_t currentTime = millis();
+  
   // Initialize pins
   for (uint8_t i = 0; i < t_elements; i++) {
     pinMode(elements[i], config.inputMode);
@@ -68,7 +75,13 @@ bool BtnKit::begin() {
     uint16_t initialState = digitalRead(elements[i]);
     pState[i] = initialState;
     cState[i] = initialState;
-    lastDebounceTime[i] = millis();
+    
+    // Initialize debounce time to ensure immediate response is possible
+    // Set it far enough in the past to allow immediate state changes
+    // Always use a non-zero value for getLastPressTime() method
+    lastDebounceTime[i] = (currentTime > config.debounceDelay + 1) 
+                          ? currentTime - config.debounceDelay - 1 
+                          : 1;
   }
   
   initialized = true;
@@ -128,17 +141,40 @@ bool BtnKit::read(void (*func)(uint8_t, uint8_t, uint8_t), uint8_t midiCh) {
   for (uint8_t i = 0; i < t_elements; i++) {
     uint32_t currentTime = millis();
     
-    if ((currentTime - lastDebounceTime[i]) > config.debounceDelay) {
-      if (cState[i] != pState[i]) {
-        lastDebounceTime[i] = currentTime;
+    // Debug output
+    printf("DEBUG: i=%d, currentTime=%lu, lastDebounceTime=%lu, diff=%lu, debounceDelay=%u\n", 
+           i, currentTime, lastDebounceTime[i], currentTime - lastDebounceTime[i], config.debounceDelay);
+    printf("DEBUG: cState=%d, pState=%d, stateChanged=%s\n", 
+           cState[i], pState[i], (cState[i] != pState[i]) ? "YES" : "NO");
+    
+    // Reset justPressed/justReleased flags on each read call
+    justPressedArray[i] = false;
+    justReleasedArray[i] = false;
+    
+    if (cState[i] != pState[i]) {
+      // For the first state change (when lastDebounceTime[i] == 0), allow immediate trigger
+      bool debounceTimeOK = (lastDebounceTime[i] == 0) || 
+                           ((currentTime - lastDebounceTime[i]) > config.debounceDelay);
+      
+      if (debounceTimeOK) {
+        printf("DEBUG: TRIGGERING CALLBACK for button %d\n", i);
+        // Set lastDebounceTime to currentTime, but ensure it's not 0 for future checks
+        lastDebounceTime[i] = (currentTime == 0) ? 1 : currentTime;
         
+        // Set justPressed/justReleased flags based on current state
         if (isPressed(cState[i])) {
+          justPressedArray[i] = true;
+          justReleasedArray[i] = false;
           func(i, 127, midiCh); // Note On
         } else {
+          justPressedArray[i] = false;
+          justReleasedArray[i] = true;
           func(i, 0, midiCh);   // Note Off
         }
         
         pState[i] = cState[i];
+      } else {
+        printf("DEBUG: Debounce time not met for button %d\n", i);
       }
     }
   }
@@ -157,14 +193,16 @@ bool BtnKit::isButtonJustPressed(uint8_t index) const {
   if (!validateIndex(index) || !initialized) {
     return false;
   }
-  return isPressed(cState[index]) && !isPressed(pState[index]);
+  // Use the static arrays for tracking press events
+  return justPressedArray[index];
 }
 
 bool BtnKit::isButtonJustReleased(uint8_t index) const {
   if (!validateIndex(index) || !initialized) {
     return false;
   }
-  return !isPressed(cState[index]) && isPressed(pState[index]);
+  // Use the static arrays for tracking release events
+  return justReleasedArray[index];
 }
 
 uint32_t BtnKit::getLastPressTime(uint8_t index) const {

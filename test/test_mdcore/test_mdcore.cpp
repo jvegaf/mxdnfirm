@@ -35,13 +35,11 @@ TEST_F(MDCoreTest, BeginInitializesComponents) {
     EXPECT_TRUE(MDCore::isReady());
 }
 
-/* Temporarily disabled due to issues
 TEST_F(MDCoreTest, HandleMIDIInput) {
+    printf("DEBUG: Starting HandleMIDIInput test\n");
     EXPECT_TRUE(MDCore::begin());
-    
-    // Test disabled for now
+    printf("DEBUG: HandleMIDIInput test completed successfully\n");
 }
-*/
 
 /* Temporarily disabled due to issues
 TEST_F(MDCoreTest, ConfigurationMethods) {

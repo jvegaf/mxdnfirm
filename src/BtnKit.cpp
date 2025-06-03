@@ -60,6 +60,8 @@ bool BtnKit::begin() {
     return false;
   }
   
+  uint32_t currentTime = millis();
+  
   // Initialize pins
   for (uint8_t i = 0; i < t_elements; i++) {
     pinMode(elements[i], config.inputMode);
@@ -68,7 +70,14 @@ bool BtnKit::begin() {
     uint16_t initialState = digitalRead(elements[i]);
     pState[i] = initialState;
     cState[i] = initialState;
-    lastDebounceTime[i] = millis();
+    
+    // Initialize debounce time to allow immediate button response
+    // Subtract debounce delay + 1 to ensure first state change is detected
+    if (currentTime > config.debounceDelay) {
+      lastDebounceTime[i] = currentTime - config.debounceDelay - 1;
+    } else {
+      lastDebounceTime[i] = 0; // Handle edge case where millis() < debounceDelay
+    }
   }
   
   initialized = true;

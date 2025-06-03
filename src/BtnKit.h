@@ -28,6 +28,10 @@ private:
   uint16_t *cState;
   uint32_t *lastDebounceTime;
   
+  // Static members for just pressed/released state
+  static bool justPressedArray[64];
+  static bool justReleasedArray[64];
+
   BtnKitConfig config;
   BtnKitError lastError;
   bool initialized;
