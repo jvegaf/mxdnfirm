@@ -1,5 +1,4 @@
 #include "NPKit.h"
-#include <stdint.h>
 
 namespace NPKit {
 

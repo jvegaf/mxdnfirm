@@ -2,7 +2,6 @@
 
 #include "sr_map.h"
 #include <Arduino.h>
-#include <stdint.h>
 
 /////////////////////////////////////////
 // OUTS

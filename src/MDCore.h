@@ -10,7 +10,6 @@
 #include "vumeters.h"
 #include <Arduino.h>
 #include <Shifter.h>
-#include <stdint.h>
 
 namespace MDCore {
 
