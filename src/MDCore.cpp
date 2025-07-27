@@ -2,8 +2,6 @@
 #include "base.h"
 #include "midi_map.h"
 #include "np_map.h"
-#include <stdint.h>
-#include <cstdio>
 
 namespace MDCore {
 
@@ -55,11 +53,11 @@ bool begin() {
 }
 
 void cChange(uint8_t channel, uint8_t number, uint8_t value) {
-  printf("DEBUG: cChange called with channel=%d, number=%d, value=%d\n", channel, number, value);
-  printf("DEBUG: isInitialized=%d\n", isInitialized);
+//  printf("DEBUG: cChange called with channel=%d, number=%d, value=%d\n", channel, number, value);
+//  printf("DEBUG: isInitialized=%d\n", isInitialized);
   
   if (!isInitialized) {
-    printf("DEBUG: cChange - Not initialized error\n");
+    //printf("DEBUG: cChange - Not initialized error\n");
     lastError = 2; // Not initialized error
     return;
   }
@@ -69,24 +67,24 @@ void cChange(uint8_t channel, uint8_t number, uint8_t value) {
     value = 127;
   }
   
-  printf("DEBUG: cChange - About to switch on channel %d\n", channel);
+//  printf("DEBUG: cChange - About to switch on channel %d\n", channel);
   switch (channel) {
   case 1: // NeoPixel control
-    printf("DEBUG: cChange - Calling NPKit::handleChange(%d, %d)\n", number, value);
+  //  printf("DEBUG: cChange - Calling NPKit::handleChange(%d, %d)\n", number, value);
     NPKit::handleChange(number, value);
     break;
     
   case 2: // VU meters
-    printf("DEBUG: cChange - Calling VUmeters::setLevel(%d, %d)\n", number, value);
+ //   printf("DEBUG: cChange - Calling VUmeters::setLevel(%d, %d)\n", number, value);
     VUmeters::setLevel(number, value);
     break;
     
   default:
-    printf("DEBUG: cChange - Unknown channel error\n");
+ //   printf("DEBUG: cChange - Unknown channel error\n");
     lastError = 3; // Unknown channel error
     break;
   }
-  printf("DEBUG: cChange - Completed\n");
+//  printf("DEBUG: cChange - Completed\n");
 }
 
 void noteOn(uint8_t channel, uint8_t number, uint8_t value) {
