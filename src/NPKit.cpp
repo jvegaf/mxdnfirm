@@ -46,14 +46,13 @@ bool begin(const NPKitConfig& config) {
     np.setBrightness(currentConfig.brightness);
     np.begin();
     
-    // Only clear if begin was successful
-    if (np.getInitialized()) {
-      np.clear();
+    
+    np.clear();
       
-      if (currentConfig.autoShow) {
-        np.show();
-      }
+    if (currentConfig.autoShow) {
+      np.show();
     }
+    
     
     initialized = true;
     return true;
