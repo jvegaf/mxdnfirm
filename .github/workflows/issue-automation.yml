@@ -227,7 +227,7 @@ jobs:
     
     steps:
     - name: 🕰️ Mark Stale Issues and PRs
-      uses: actions/stale@v9
+      uses: actions/stale@v10
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         stale-issue-message: |
