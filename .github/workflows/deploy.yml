@@ -63,7 +63,7 @@ jobs:
           fi
 
       - name: 📤 Upload Staging Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: staging-firmware
           path: .pio/build/mega/firmware.hex
@@ -133,7 +133,7 @@ jobs:
           chmod +x release-package/install.sh
 
       - name: 📤 Upload Production Package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: production-release
           path: release-package/
@@ -174,7 +174,7 @@ jobs:
           cp schematic.pdf release-package/ 2>/dev/null || echo "No schematic found"
 
       - name: 📤 Upload to Release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-firmware-${{ github.event.release.tag_name }}
           path: release-package/
