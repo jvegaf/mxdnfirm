@@ -28,7 +28,7 @@ jobs:
     environment: staging
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v6
@@ -80,7 +80,7 @@ jobs:
     needs: deploy-staging
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v6
@@ -149,7 +149,7 @@ jobs:
     environment: production
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v6
