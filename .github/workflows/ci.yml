@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 🐍 Setup Python
         uses: actions/setup-python@v6
         with:
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 📦 Install cpplint
         run: pip install cpplint
       - name: 🔬 Run cpplint
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 🐍 Setup Python
         uses: actions/setup-python@v6
         with:
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 🐍 Setup Python
         uses: actions/setup-python@v6
         with:
